@@ -8,6 +8,7 @@ only the page template, styles and extra sections differ. The production `index.
 |---|---|---|
 | `variant-a.html` | **Field atlas** (editorial): engraving-style hero drawn from the coastline, ledger figures, the atlas, a decade chart, provenance/material/completeness bars that filter the atlas, specimen plates for the complete carcasses, a method section. Libre Caslon Display, Source Sans 3, IBM Plex Mono. | `a/atlas.html`, `a/atlas.css`, `a/extra.js` |
 | `variant-b.html` | **Museum catalogue** (information design): sticky filter drawer, the map as a catalogue plate, label-plate record cards, a catalogue summary band, an accessions ledger, catalogue notes. Archivo, IBM Plex Mono. | `b/atlas.html`, `b/atlas.css`, `b/extra.js` |
+| `variant-c.html` | **Merged candidate**: B's structure and behaviour (map near the fold, filter panel, summary band, ledger) with A's identity (Caslon titles and figures, double-rule plates, coastline backdrop, specimen plates, method layout) and header navigation. Libre Caslon Display, Source Sans 3, IBM Plex Mono. | `c/atlas.html`, `c/atlas.css`, `c/extra.js` |
 
 Both use the colour-vision-safe taxon palette (Mammoth `#c98500`, Rhinoceros `#199e70`,
 Cave Lion/Felid `#d95926`, Horse `#3987e5`, Wolf/Canid `#d55181`, Bison `#6a8f00`), set through
@@ -19,8 +20,8 @@ Rebuild after a workbook update:
 ```bash
 python3 scripts/build_atlas.py --skin experimental/a --out experimental/variant-a.html --previous index.html
 python3 scripts/build_atlas.py --skin experimental/b --out experimental/variant-b.html --previous index.html
-ATLAS_HTML=experimental/variant-a.html node --test tests/atlas.test.mjs
-ATLAS_HTML=experimental/variant-b.html node --test tests/atlas.test.mjs
+python3 scripts/build_atlas.py --skin experimental/c --out experimental/variant-c.html --previous index.html
+for v in a b c; do ATLAS_HTML=experimental/variant-$v.html node --test tests/atlas.test.mjs; done
 ```
 
 A skin directory needs `atlas.html` (every element ID from `src/atlas.html`, filter groups as
