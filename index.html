@@ -256,7 +256,7 @@ const normal = s => clean(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toL
 const name = r => status(r.common_name) === 'val' ? clean(val(r.common_name)) : clean(r.location);
 // Taxon groups come from the workbook (payload.species, in Specimen_type_list order). Colours are
 // assigned by name; any new group falls back to the spare palette.
-const PALETTE={Mammoth:'#d9b075',Rhinoceros:'#8cb8b5',Horse:'#b3a3c8',Bison:'#a9b68d','Cave Lion/Felid':'#d59585','Wolf/Canid':'#b0b1b0'};
+const PALETTE=Object.assign({Mammoth:'#d9b075',Rhinoceros:'#8cb8b5',Horse:'#b3a3c8',Bison:'#a9b68d','Cave Lion/Felid':'#d59585','Wolf/Canid':'#b0b1b0'},globalThis.__ATLAS_PALETTE__||{});
 const SPARE_COLORS=['#c9a7a0','#9fb7c9','#c7c29a','#b7a9c9','#a3c0a8'];
 const TAXA={};Object.keys(D.species).forEach((k,i)=>{TAXA[k]={color:PALETTE[k]||SPARE_COLORS[i%SPARE_COLORS.length],shape:'circle'};});
 const TAXON_COUNT=Object.keys(TAXA).length;

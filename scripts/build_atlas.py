@@ -44,6 +44,7 @@ CSS = ROOT / "src" / "atlas.css"
 APP = ROOT / "src" / "atlas.js"
 LAND = ROOT / "src" / "land.txt"
 THREE = ROOT / "vendor" / "three.r128.min.js"
+EXTRA = None  # optional skin script inserted at {{EXTRA}}
 REVIEW_NOTES = ROOT / "data" / "review_notes.json"
 
 # Columns, by header, that the interface reads. Older workbooks used slightly different headers.
@@ -409,13 +410,14 @@ def render(payload, dataset_url: str, dataset_doi: str) -> str:
 
     # Small text fills first (the app script carries the dataset URL/DOI placeholders), then the
     # large embedded blocks, which are never scanned for placeholders.
-    page = substitute(TEMPLATE.read_text(encoding="utf-8"), fills | {k: "{{" + k + "}}" for k in ("CSS", "APP", "LAND", "THREE", "PAYLOAD")})
+    page = substitute(TEMPLATE.read_text(encoding="utf-8"), fills | {k: "{{" + k + "}}" for k in ("CSS", "APP", "LAND", "THREE", "PAYLOAD", "EXTRA")})
     blocks = {
         "CSS": CSS.read_text(encoding="utf-8").strip(),
         "APP": substitute(APP.read_text(encoding="utf-8").strip(), fills),
         "LAND": LAND.read_text(encoding="utf-8").strip(),
         "THREE": THREE.read_text(encoding="utf-8").strip(),
         "PAYLOAD": json_for_html(payload),
+        "EXTRA": substitute(EXTRA.read_text(encoding="utf-8").strip(), fills) if EXTRA else "",
     }
     for key, value in blocks.items():
         page = page.replace("{{" + key + "}}", value, 1)
@@ -432,7 +434,18 @@ def main(argv=None):
     ap.add_argument("--dataset-url", default="", help="Borealis dataset landing page once published")
     ap.add_argument("--dataset-doi", default="", help="Dataset DOI once published")
     ap.add_argument("--check", action="store_true", help="print a summary and review notes without writing")
+    ap.add_argument("--skin", type=Path, default=None, help="directory with atlas.html + atlas.css (+ optional extra.js, atlas.js) that replace the src/ defaults")
     args = ap.parse_args(argv)
+    if args.skin:
+        global TEMPLATE, CSS, APP, EXTRA
+        TEMPLATE, CSS = args.skin / "atlas.html", args.skin / "atlas.css"
+        if (args.skin / "atlas.js").exists():
+            APP = args.skin / "atlas.js"
+        if (args.skin / "extra.js").exists():
+            EXTRA = args.skin / "extra.js"
+        for f in (TEMPLATE, CSS):
+            if not f.exists():
+                sys.exit(f"Skin file missing: {f}")
     if not args.workbook.exists():
         sys.exit(f"Workbook not found: {args.workbook}")
     payload = build_payload(args.workbook, args.sheet, args.previous)

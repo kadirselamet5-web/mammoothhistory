@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const html = readFileSync(path.join(here, '..', 'index.html'), 'utf8');
+const html = readFileSync(process.env.ATLAS_HTML ? path.resolve(process.env.ATLAS_HTML) : path.join(here, '..', 'index.html'), 'utf8');
 const payload = JSON.parse(html.match(/<script id="payload" type="application\/json">([\s\S]*?)<\/script>/)[1]);
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 const app = scripts.find(s => s.includes('Mammoth History Lab specimen atlas'));
