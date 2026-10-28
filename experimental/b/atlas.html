@@ -15,7 +15,7 @@
 <style>{{CSS}}</style>
 </head>
 <body>
-<a class="skip" href="#workspace">Skip to the catalogue</a>
+<a class="skip" href="#workspace" id="skipToCatalogue">Skip to the catalogue</a>
 <header class="cat-header">
   <a class="brand" href="https://mammothhistorylab.com/" target="_blank" rel="noopener">The Mammoth History Lab</a>
   <p class="cat-header-title"><span>Catalogue of permafrost finds</span><span class="mono">Edition {{SOURCE_DATE}}</span></p>
@@ -24,9 +24,9 @@
 <main>
   <section class="title-plate" aria-labelledby="atlasTitle">
     <div class="title-plate-inner">
-      <p class="eyebrow">Soft-tissue specimen database · {{SOURCE_SHEET}} of {{SOURCE_FILE}}</p>
+      <p class="eyebrow">Mammoth History Lab · Edition {{SOURCE_DATE}}</p>
       <h1 id="atlasTitle">Permafrost-Preserved Megafaunal Specimens</h1>
-      <p class="lede">A catalogue of every soft-tissue find in the Lab’s database: where each specimen was discovered, how its position is documented, when it was found and how old the sources say it is.</p>
+      <p class="lede">A catalogue of every soft-tissue find in the Lab’s database. It shows where each specimen was discovered, how its position is documented, when it was found and how old the sources say it is.</p>
       <dl class="figures">
         <div><dt>Records</dt><dd id="totalStat">{{TOTAL}}</dd></div>
         <div><dt>With coordinates</dt><dd>{{MAPPED}}</dd></div>
@@ -38,7 +38,7 @@
 
   <div class="workbench" id="workspace" tabindex="-1">
     <aside class="drawer" aria-label="Filter specimen records">
-      <div class="drawer-head"><h2>Drawer</h2><button class="text-button" id="reset">Reset all</button></div>
+      <div class="drawer-head"><h2>Filters</h2><button class="text-button" id="reset">Reset all</button></div>
       <label for="search" class="sr-only">Search all record fields</label>
       <div class="search-box"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Name, place, source, ID" autocomplete="off"></div>
       <p class="help">Searches names, discovery sites, ages, provenance labels and source references.</p>
@@ -49,7 +49,7 @@
         <label class="select-label" for="ageFilter">Specimen age</label><select id="ageFilter"><option value="all">All age records</option><option value="dated">Numeric age recorded</option><option value="missing">No numeric age recorded</option><option value="unparsed">Source text only / no numeric reading</option></select>
         <label class="select-label" for="mappedFilter">Map position</label><select id="mappedFilter"><option value="all">All records</option><option value="mapped">Coordinates recorded</option><option value="unmapped">No coordinates recorded</option></select>
       </details>
-      <p class="drawer-note"><strong>A record of finds, not of animals.</strong> Point density reflects collecting and documentation. Placeholder positions mark a region rather than a find spot.</p>
+      <p class="drawer-note"><strong>This is a record of finds;</strong> point density reflects collecting, not animal abundance. Placeholder positions mark a region rather than a find spot.</p>
     </aside>
 
     <section class="bench" aria-label="Discovery map results">
@@ -62,6 +62,7 @@
       </div>
       <section id="mapPanel" class="map-panel plate" role="tabpanel" aria-labelledby="tab-sites">
         <div class="map-heading"><div><h2 id="mapTitle">Discovery sites</h2><p id="mapSubtitle">Select any point to open its specimen record.</p></div><div class="map-view-controls"><div class="projection" role="group" aria-label="Map projection"><button data-projection="flat" aria-pressed="true">Flat map</button><button data-projection="globe" aria-pressed="false">Polar globe</button></div><button id="globeSpin" class="text-button globe-spin" aria-label="Toggle automatic globe rotation" aria-pressed="false" disabled>Rotate</button></div></div>
+        <a class="skip-map" href="#discoveryChronology" id="skipMap">Skip map points</a>
         <div class="map-canvas-wrap" id="mapStage">
           <svg class="map-surface" id="atlasMap" viewBox="0 0 1000 570" tabindex="0" role="group" aria-label="Interactive map. Use plus and minus to zoom, arrow keys to pan or rotate, and Home to reset."></svg>
           <canvas class="map-surface" id="classicGlobe" tabindex="0" role="img" aria-label="Rotatable 3D globe with individual specimens. Drag or use arrow keys to rotate; use the record list below for keyboard access to each specimen." hidden></canvas>
@@ -70,13 +71,13 @@
           <div id="mapEmpty" class="map-empty" hidden><h3>No mapped records in this view</h3><p>Try adjusting the filters, or inspect the matching records below.</p><button class="button" id="emptyReset">Reset filters</button></div>
           <div id="mapTooltip" class="map-tooltip" role="tooltip" hidden></div>
         </div>
-        <section class="time-panel" id="discoveryChronology" aria-label="Discovery chronology">
+        <section class="time-panel" id="discoveryChronology" aria-label="Discovery chronology" tabindex="-1">
           <div class="time-heading"><label for="endYear">Discovery chronology</label><div class="time-mode"><label class="sr-only" for="timeMode">Discovery chronology mode</label><select id="timeMode"><option value="through">Found by year</option><option value="between">Found between years</option></select><button id="timeReset" class="text-button">All years</button></div></div>
           <div class="timeline"><svg id="histogram" viewBox="0 0 800 38" preserveAspectRatio="none" aria-label="Recorded discoveries per decade; select a bar to filter to that decade"></svg></div>
           <div class="year-controls"><button id="play" class="icon-button" aria-label="Play discovery chronology" title="Play discovery chronology">▶</button><label id="startWrap" hidden><span class="sr-only">Start year</span><input id="startYear" type="number" min="{{YEAR_MIN}}" max="{{YEAR_MAX}}" value="{{YEAR_MIN}}"></label><input id="yearRange" type="range" min="{{YEAR_MIN}}" max="{{YEAR_MAX}}" value="{{YEAR_MAX}}" aria-label="Latest discovery year"><label><span class="sr-only">End year</span><input id="endYear" type="number" min="{{YEAR_MIN}}" max="{{YEAR_MAX}}" value="{{YEAR_MAX}}"></label></div>
           <div class="time-caption"><span>{{YEAR_MIN}}</span><span id="timeCaption">All recorded find years</span><span>{{YEAR_MAX}}</span></div>
         </section>
-        <section class="time-panel age-panel" id="specimenChronology" aria-labelledby="agePanelTitle" hidden>
+        <section class="time-panel age-panel" id="specimenChronology" aria-labelledby="agePanelTitle" tabindex="-1" hidden>
           <div class="time-heading"><h3 id="agePanelTitle">Specimen ages</h3><div class="time-mode"><label class="sr-only" for="ageMode">Specimen age selection</label><select id="ageMode"><option value="all">All recorded ages</option><option value="between">Select an age interval</option></select><button id="ageReset" class="text-button">All ages</button></div></div>
           <p class="age-context">Years as recorded in the sources · No translation or recalibration</p>
           <div class="age-plot"><svg id="ageTimeline" viewBox="0 0 800 180" preserveAspectRatio="none" role="group" aria-label="Recorded specimen ages. Each row is one specimen. Lines retain ranges and uncertainty; arrows indicate lower limits."></svg><p id="agePlotEmpty" hidden>No numeric age positions in this selection.</p></div>
@@ -106,11 +107,11 @@
     <div class="band-inner">
       <div class="band-head"><h2 id="accessionsTitle">Accessions ledger</h2><p id="ledgerStatus">All {{TOTAL}} records in order of discovery year. Select a specimen to open its record.</p></div>
       <div class="ledger-scroll" id="ledger" tabindex="0" aria-label="Scrollable accessions ledger"></div>
-      <p class="ledger-note">Dimmed lines do not match the current drawer filters; opening one resets the drawer. Years in brackets are collection years used where no discovery year is recorded.</p>
+      <p class="ledger-note">Lines outside the current filters are dimmed and cannot be opened until the filters change. Years in brackets are collection years used where no discovery year is recorded.</p>
     </div>
   </section>
 
-  <section class="method" id="method" aria-labelledby="methodTitle">
+  <section class="method" id="method" aria-labelledby="methodTitle" tabindex="-1">
     <div class="band-inner">
       <div class="band-head"><h2 id="methodTitle">Catalogue notes</h2><p>Method, conventions and citation for edition {{SOURCE_DATE}} (built {{BUILD_DATE}}).</p></div>
       <div class="notes">
@@ -122,7 +123,7 @@
         <div class="note"><h3>Source values to review</h3><p>These notes flag possible issues while retaining the workbook values. They also appear in the affected records.</p><ul>{{REVIEW_LIST}}</ul></div>
         <div class="note"><h3>Discovery years and specimen ages</h3><p><b>Discovery sites</b> uses recorded find years, spanning {{YEAR_SPAN}} in this workbook, with the collection year as a fallback. <b>Specimen ages</b> uses the text in Age_BP_radiocarbon and does not inherit the discovery-year filter. Ranges and stated ± uncertainty are retained as intervals, arrows show lower limits, and alternative values are evaluated separately. Digit groups separated by a space, comma or period (“29 500”, “34, 450”, “31.700”) are read as thousands. Nothing is translated, standardized or recalibrated: BP conventionally refers to years before 1950, but calibration and notation differ between sources, and the numeric display does not make these timescales equivalent.</p></div>
         <div class="note"><h3>Dataset and citation</h3><p><b>Borealis · University of Toronto Dataverse</b><br><span data-dataset-doi>DOI: forthcoming</span></p><p>The dataset link and DOI will be added when publication is complete; “See dataset” will open that publication. Published and archival reference keys are reproduced from the workbook; the published dataset will provide the authoritative citation and reuse terms.</p></div>
-        <div class="note"><h3>Using the catalogue</h3><p>Taxon and provenance choices are inclusive; material filters match any selected tag. Counts in the drawer reflect the other active filters. Chronology bars select a decade. Every map point, ledger line and label plate opens its record. Ctrl/⌘ + scroll zooms the map; ordinary scrolling moves the page. All data, coastline geometry and the globe renderer are embedded in this HTML.</p></div>
+        <div class="note"><h3>Using the catalogue</h3><p>Taxon and provenance choices are inclusive; material filters match any selected tag. Counts in the filter panel reflect the other active filters. Chronology bars select a decade. Every map point, ledger line and label plate opens its record. Ctrl/⌘ + scroll zooms the map; ordinary scrolling moves the page. All data, coastline geometry and the globe renderer are embedded in this HTML.</p></div>
       </div>
     </div>
   </section>

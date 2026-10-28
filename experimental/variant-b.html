@@ -14,15 +14,17 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <style>/* ============================================================================================
    Variant B · Museum catalogue / specimen drawer
-   Layout: a catalogue workbench. A sticky filter drawer on the left; the map plate, the table and
+   Layout: a catalogue workbench. A sticky filter panel on the left; the map plate, the table and
    the label plates on the right; the summary band, the accessions ledger and the catalogue notes
    run full width beneath. Type: Archivo, a sturdy grotesque with a width axis in the lineage of the
    faces used on museum signage and specimen labels, for headings and controls; IBM Plex Mono, with
    clear tabular figures and none of the typewriter novelty, for IDs, coordinates, dates and every
    figure that must line up. Colour: the Lab's brown and rose, ivory on the dark map plate.
+   Type scale: 12 px floor for mono meta, 13 px body meta, 15 px body, 17/24 px section heads.
    ============================================================================================ */
 :root{
   --brown:#605246;--brown-deep:#4b3f37;--rose:#c79186;--rose-dark:#86574e;--rose-deep:#70473f;--rose-light:#f3e6e2;
+  --ivory:#e6d7cf;--ivory-bright:#f7ede6;--ivory-rose:#efbfb5;--ivory-link:#f4d4ca;
   --ink:#302b29;--ink-2:#55504c;--muted:#6b6663;--line:#dedbd7;--line-2:#cdc6bf;--rule:#b9ada3;
   --paper:#fff;--paper-2:#f8f7f5;--plate:#fbf8f3;--plate-edge:#d8cfc4;
   --map-dark:#352d28;--map-mid:#4a3d35;--map-edge:#756155;--map-rose:#dfa89a;--map-ivory:#efded0;
@@ -41,6 +43,7 @@ button{border:0;background:none;cursor:pointer;padding:0}
 button:disabled{cursor:default;opacity:.45}
 button,a,input,select,summary{-webkit-tap-highlight-color:transparent}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,svg:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+[tabindex="-1"]:focus{outline:none}
 a{color:var(--rose-dark)}
 input,select{min-height:36px}
 input[type=number],select{background:#fff;border:1px solid var(--line-2);border-radius:2px;padding:6px 8px;max-width:100%;font-family:var(--mono);font-size:13px}
@@ -50,14 +53,16 @@ input[type=range]{accent-color:var(--rose-dark)}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .skip{position:fixed;top:12px;left:-999px;z-index:100;background:#fff;padding:12px;border:1px solid var(--line-2)}
 .skip:focus{left:16px}
+.skip-map{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.skip-map:focus{position:static;display:block;width:auto;height:auto;clip:auto;overflow:visible;padding:10px 16px;background:#fff;border-top:1px solid var(--line);color:var(--rose-dark);font-weight:600;outline-offset:-4px}
 h1,h2,h3{text-wrap:balance}
 
 /* Header ------------------------------------------------------------------ */
-.cat-header{background:var(--brown);color:#eee5df;min-height:60px;display:flex;align-items:center;gap:20px;padding:10px var(--gutter-r) 10px var(--gutter-l)}
-.brand{font-weight:600;font-stretch:105%;font-size:19px;letter-spacing:-.2px;color:#efbfb5;text-decoration:none;white-space:nowrap}
-.cat-header-title{margin:0 auto;display:flex;gap:14px;align-items:baseline;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#e6d7cf;min-width:0;flex-wrap:wrap}
-.cat-header-title .mono{letter-spacing:0;text-transform:none;color:#d8c2b7;font-size:12px}
-.header-button{color:#f4d4ca;border-bottom:1px solid var(--rose);padding:6px 0;font-size:14px;white-space:nowrap}
+.cat-header{background:var(--brown);color:var(--ivory);min-height:60px;display:flex;align-items:center;gap:20px;padding:10px var(--gutter-r) 10px var(--gutter-l)}
+.brand{font-weight:600;font-stretch:105%;font-size:19px;letter-spacing:-.2px;color:var(--ivory-rose);text-decoration:none;white-space:nowrap}
+.cat-header-title{margin:0 auto;display:flex;gap:14px;align-items:baseline;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ivory);min-width:0;flex-wrap:wrap}
+.cat-header-title .mono{letter-spacing:0;text-transform:none;color:var(--ivory);font-size:12px}
+.header-button{color:var(--ivory-link);border-bottom:1px solid var(--rose);padding:6px 0;font-size:14px;white-space:nowrap}
 
 /* Title plate --------------------------------------------------------------- */
 .title-plate{border-bottom:1px solid var(--line);background:var(--paper)}
@@ -67,8 +72,8 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 .lede{margin:0;font-size:15px;color:var(--ink-2);max-width:64ch;grid-column:1}
 .figures{margin:0;display:flex;gap:10px;flex-wrap:wrap;grid-column:2;grid-row:1/3;align-self:end}
 .figures>div{border:1px solid var(--plate-edge);background:var(--plate);padding:9px 13px 8px;min-width:104px;display:flex;flex-direction:column-reverse;gap:2px}
-.figures dt{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
-.figures dd{margin:0;font-size:25px;font-weight:600;line-height:1.1;letter-spacing:-.5px}
+.figures dt{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+.figures dd{margin:0;font-size:25px;font-weight:600;line-height:1.1;letter-spacing:-.5px;font-variant-numeric:proportional-nums}
 .figures dd.span{font-size:21px}
 
 /* Workbench ------------------------------------------------------------------- */
@@ -76,10 +81,10 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 .drawer{position:sticky;top:0;align-self:start;max-height:100vh;overflow:auto;border-right:1px solid var(--line);padding:18px 18px 24px 0;scrollbar-gutter:stable;scrollbar-width:thin}
 .bench{min-width:0;padding:18px 0 10px 24px}
 
-/* Drawer */
+/* Filter panel */
 .drawer-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px}
-.drawer-head h2{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin:0;color:var(--rose-dark)}
-.text-button{font-size:12.5px;color:var(--rose-dark);padding:2px 0;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px}
+.drawer-head h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin:0;color:var(--rose-dark)}
+.text-button{font-size:13px;color:var(--rose-dark);padding:2px 0;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px}
 .text-button:hover{text-decoration-color:currentColor}
 .search-box{display:flex;gap:8px;align-items:center;border:1px solid var(--line-2);border-radius:2px;background:#fff;padding:0 10px}
 .search-box:focus-within{outline:2px solid var(--focus);outline-offset:2px}
@@ -88,18 +93,18 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 .search-box input:focus-visible{outline:none}
 .help{font-size:12px;line-height:1.5;color:var(--muted);margin:7px 0 10px}
 .filter-section{border-top:1px solid var(--line);padding:12px 0}
-.filter-section summary{font-size:13px;font-weight:600;cursor:pointer;list-style:none;position:relative;padding-right:16px;display:flex;align-items:baseline;gap:8px}
+.filter-section summary{font-size:13px;font-weight:600;cursor:pointer;list-style:none;position:relative;padding-right:16px;display:flex;align-items:baseline;gap:8px;min-height:28px}
 .filter-section summary::-webkit-details-marker{display:none}
-.filter-section summary::after{content:'+';position:absolute;right:0;top:-1px;font-family:var(--mono);color:var(--muted);font-weight:400}
+.filter-section summary::after{content:'+';position:absolute;right:0;top:50%;transform:translateY(-50%);font-family:var(--mono);color:var(--muted);font-weight:400}
 .filter-section[open] summary::after{content:'−'}
-.filter-section summary>span{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;margin-left:auto;margin-right:6px;white-space:nowrap}
+.filter-section summary>span{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:400;margin-left:auto;margin-right:6px;white-space:nowrap}
 .filter-section .help{margin:6px 0 2px}
 .section-actions{display:flex;gap:14px;margin:8px 0 4px}
 .section-actions button{font-size:12px}
 .check-row{display:flex;gap:8px;align-items:center;min-height:32px;cursor:pointer;font-size:13.5px;padding:0 4px;border-radius:2px}
 .check-row:hover{background:var(--paper-2)}
 .check-row input{width:14px;height:14px;margin:0;accent-color:var(--rose-dark);min-height:auto;flex-shrink:0}
-.check-row .count{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.check-row .count{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted)}
 .taxon-symbol,.prov-swatch{flex-shrink:0}
 .taxon-symbol circle,.taxon-symbol polygon,.taxon-symbol rect,.taxon-symbol path{stroke:#6e665f;stroke-width:.8}
 .material-options .check-row{min-height:31px;font-size:13px}
@@ -110,25 +115,25 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 
 /* Bench: results bar, chips, tabs */
 .results-bar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;min-height:44px;margin-bottom:8px}
-#resultCount{margin:0;font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+#resultCount{margin:0;font-size:13px;color:var(--muted);font-family:var(--mono)}
 #resultCount strong{color:var(--ink);font-size:24px;font-weight:600;font-family:var(--sans);margin-right:5px;letter-spacing:-.5px}
 .dataset-action{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .button{display:inline-flex;gap:12px;align-items:center;padding:8px 13px;border:1px solid var(--rose-dark);border-radius:2px;background:var(--rose-dark);color:#fff;font-size:13.5px;min-height:36px;text-decoration:none}
 .button:hover{background:var(--rose-deep)}
 .dataset-action .button[aria-disabled=true]{background:var(--rose-light);border-color:#c5a399;color:#78554b;cursor:default}
-.dataset-status{font-size:11px;font-family:var(--mono);color:var(--muted)}
+.dataset-status{font-size:12px;font-family:var(--mono);color:var(--muted)}
 .active-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .active-filters:empty{display:none}
 .filter-chip{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--rose);background:var(--rose-light);color:var(--rose-deep);border-radius:2px;padding:4px 9px;font-size:12px;font-family:var(--mono)}
 .filter-chip span{font-size:14px;line-height:1}
 .view-tabs{display:flex;border-bottom:1px solid var(--line-2)}
-.view-tabs button{font-size:12.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:10px 16px 9px;border:1px solid transparent;border-bottom:0;color:var(--muted);margin-bottom:-1px;border-radius:2px 2px 0 0}
+.view-tabs button{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:10px 16px 9px;border:1px solid transparent;border-bottom:0;color:var(--muted);margin-bottom:-1px;border-radius:2px 2px 0 0}
 .view-tabs button:hover{color:var(--ink)}
 .view-tabs button[aria-selected=true]{color:var(--rose-deep);background:var(--paper);border-color:var(--line-2) var(--line-2) var(--paper)}
 
 /* Map plate ------------------------------------------------------------------- */
 .plate{border:1px solid var(--line-2);border-top:0;background:var(--paper)}
-.plate-caption{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--muted);padding:8px 14px;border-top:1px solid var(--line);margin:0}
+.plate-caption{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted);padding:8px 14px;border-top:1px solid var(--line);margin:0}
 .map-heading{padding:14px 16px 12px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
 .map-heading h2{font-size:16px;font-weight:600;margin:0}
 .map-heading p{font-size:12px;color:var(--muted);margin:3px 0 0}
@@ -157,7 +162,7 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 #atlasMap .marker .prov-ring{fill:none;stroke-dasharray:2.4 1.7;stroke-width:1;opacity:.95;pointer-events:none}
 #atlasMap .point-leader{stroke:#c4ab98;stroke-opacity:.55;stroke-width:.65;pointer-events:none}
 #atlasMap .site-anchor{fill:#e7ceba;opacity:.6;pointer-events:none}
-#atlasMap .selected-label{fill:#fff0e5;font:11px var(--mono);paint-order:stroke;stroke:var(--map-dark);stroke-width:3px;pointer-events:none;stroke-linejoin:round}
+#atlasMap .selected-label{fill:#fff0e5;font:12px var(--mono);paint-order:stroke;stroke:var(--map-dark);stroke-width:3px;pointer-events:none;stroke-linejoin:round}
 .map-controls{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
 .icon-button{border:1px solid var(--line-2);border-radius:2px;background:#fff;min-width:34px;min-height:34px;padding:3px 7px;font-size:18px;display:inline-grid;place-items:center;flex-shrink:0}
 .icon-button:hover{background:var(--rose-light);border-color:#c9ada4}
@@ -165,22 +170,23 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 .map-controls .icon-button:hover{background:#6b5246;border-color:var(--map-rose);color:#fff}
 .map-controls .icon-button:focus-visible,.map-surface:focus-visible{outline-color:#f1c9b9}
 #fit{font-size:12px;font-family:var(--mono)}
-.map-projection{position:absolute;top:9px;left:14px;font-family:var(--mono);font-size:11px;color:#e4cbb7;text-shadow:0 1px 3px var(--map-dark);margin:0;pointer-events:none;max-width:70%}
+.map-projection{position:absolute;top:9px;left:14px;font-family:var(--mono);font-size:12px;color:#e4cbb7;text-shadow:0 1px 3px var(--map-dark);margin:0;pointer-events:none;max-width:70%}
 .map-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(370px,80%);text-align:center;background:#fffffff2;border:1px solid var(--line);border-radius:2px;padding:25px}
 .map-empty h3{font-size:16px;margin:0 0 8px}
 .map-empty p{font-size:14px;color:var(--muted)}
 .map-tooltip{position:absolute;pointer-events:none;background:#302721f5;border:1px solid #a98e79;color:#fff2e8;padding:9px 12px;border-radius:2px;max-width:290px;font-size:12.5px;line-height:1.6;z-index:3;box-shadow:0 5px 22px #0003;white-space:normal}
-.map-tooltip span{font-family:var(--mono);font-size:11px;color:#dcc3b3}
+.map-tooltip span{font-family:var(--mono);font-size:12px;color:#dcc3b3}
 .tooltip-review{color:#f1c5ac}
 .map-legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:11px 16px;font-size:12px;align-items:center}
 .legend-item{display:inline-flex;align-items:center;gap:5px;line-height:1.3}
 .legend-item svg{flex-shrink:0}
-.legend-item .count{font-family:var(--mono);color:var(--muted);font-size:11px}
+.legend-item .count{font-family:var(--mono);color:var(--muted);font-size:12px}
 .legend-group{display:inline-flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding-left:14px;border-left:1px solid var(--line-2)}
 .line-swatch{width:20px;border-top:2px solid #9b8172;display:inline-block}.line-swatch.fine{border-width:1px}
-.map-foot{display:flex;justify-content:space-between;gap:8px;padding:0 16px 9px;font-size:11.5px;color:var(--muted);font-family:var(--mono)}
+.map-foot{display:flex;justify-content:space-between;gap:8px;padding:0 16px 9px;font-size:12px;color:var(--muted);font-family:var(--mono)}
 .map-foot p{margin:0}
-.view-note{margin:0;padding:10px 16px;background:var(--paper-2);font-size:12px;line-height:1.6;border-top:1px solid var(--line);color:var(--muted)}
+.view-note{margin:0;padding:10px max(16px,calc(100% - 80ch)) 10px 16px;background:var(--paper-2);font-size:12px;line-height:1.6;border-top:1px solid var(--line);color:var(--muted)}
+.view-note:empty{display:none}
 
 /* Time panels */
 .map-panel>.time-panel{margin:0;border:0;border-bottom:1px solid var(--line-2);background:var(--paper-2);padding:12px 16px 10px}
@@ -201,7 +207,7 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 .year-controls input[type=number]{width:81px;font-size:13px;min-height:32px}
 .year-controls #startWrap{flex-shrink:0}
 #play{font-size:13px}
-.time-caption{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.time-caption{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
 #timeCaption{text-align:center}
 .age-panel .age-context{font-size:12px;color:var(--muted);margin:5px 0 10px;font-family:var(--mono)}
 .age-plot{background:linear-gradient(110deg,#514037,#392e29);border:1px solid #9b8172;border-radius:2px;padding:4px 8px;position:relative}
@@ -211,7 +217,7 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 .age-record{cursor:pointer}
 .age-record:hover,.age-record:focus-visible{filter:brightness(1.4);outline:1px solid #f4dfce;outline-offset:3px}
 #agePlotEmpty{position:absolute;inset:0;display:grid;place-content:center;font-size:13px;color:#efded0;margin:0;pointer-events:none;text-align:center;padding:8px}
-.age-axis{position:relative;margin:5px 16px 8px;height:18px;font-size:11.5px;color:var(--muted);line-height:18px;font-family:var(--mono)}
+.age-axis{position:relative;margin:5px 16px 8px;height:18px;font-size:12px;color:var(--muted);line-height:18px;font-family:var(--mono)}
 .age-axis span{position:absolute;transform:translateX(-50%);white-space:nowrap}
 .age-axis span:first-child{transform:none}.age-axis span:last-child{transform:translateX(-100%)}
 .age-range-controls{display:grid;grid-template-columns:105px minmax(0,1fr) 105px;grid-template-rows:1fr 1fr;gap:0 14px;align-items:center}
@@ -222,18 +228,18 @@ h1{font-size:clamp(28px,3vw,44px);font-weight:600;font-stretch:108%;letter-spaci
 #ageMinRange{grid-column:2;grid-row:1}#ageMaxRange{grid-column:2;grid-row:2}
 .age-selection-caption{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:12px;color:var(--muted)}
 .age-selection-caption strong{font-size:13px;font-weight:600;color:var(--rose-deep);font-family:var(--mono)}
-.age-panel .age-help{font-size:12px;color:var(--muted);line-height:1.55;margin:6px 0 0;max-width:105ch}
+.age-panel .age-help{font-size:12px;color:var(--muted);line-height:1.55;margin:6px 0 0;max-width:80ch}
 
 /* Table plate */
 .table-scroll{overflow:auto;max-height:650px;scrollbar-gutter:stable}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-thead th{position:sticky;top:0;text-align:left;background:var(--paper-2);border-bottom:1px solid var(--line-2);padding:10px 10px;z-index:1;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+thead th{position:sticky;top:0;text-align:left;background:var(--paper-2);border-bottom:1px solid var(--line-2);padding:10px 10px;z-index:1;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
 thead button{padding:0;white-space:nowrap;font:inherit;color:inherit}
 thead th[aria-sort] button{color:var(--rose-deep)}
 td{border-bottom:1px solid var(--line);padding:11px 10px;vertical-align:top}
-td:first-child{font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+td:first-child{font-family:var(--mono);font-size:13px;color:var(--ink-2)}
 td .record-link{font-size:13.5px;text-align:left;color:var(--rose-dark);padding:0;text-decoration:underline;text-underline-offset:3px;font-weight:600}
-td small{display:block;color:var(--muted);font-size:11px;margin-top:3px;font-family:var(--mono)}
+td small{display:block;color:var(--muted);font-size:12px;margin-top:3px;font-family:var(--mono)}
 td small i{font-style:italic}
 tbody tr.selected{background:#faf0ec}
 tbody tr:hover{background:var(--paper-2)}
@@ -250,42 +256,47 @@ tbody tr:hover{background:var(--paper-2)}
 .record-card::before{content:"";position:absolute;left:10px;right:10px;top:6px;border-top:1px solid var(--plate-edge)}
 .record-card:hover{border-color:var(--rose);background:#fdf9f4}
 .record-card.selected{border-color:var(--rose-dark);box-shadow:inset 0 0 0 1px var(--rose-dark)}
-.card-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--muted);margin:6px 0 8px;letter-spacing:.02em}
+.card-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);margin:6px 0 8px;letter-spacing:.02em}
 .card-meta>span{display:flex;align-items:center;gap:6px;min-width:0}
 .card-meta>span:last-child{color:var(--ink-2)}
 .record-card h3{font-size:15px;font-weight:600;line-height:1.3;margin:0 0 4px;overflow-wrap:anywhere}
 .record-card p{font-size:12.5px;color:var(--ink-2);margin:2px 0;overflow-wrap:anywhere}
-.record-card .card-parts{font-family:var(--mono);font-size:11px;color:var(--rose-deep);margin-top:8px;border-top:1px dashed var(--plate-edge);padding-top:7px;line-height:1.5}
+.record-card .card-parts{font-family:var(--mono);font-size:12px;color:var(--rose-deep);margin-top:8px;border-top:1px dashed var(--plate-edge);padding-top:7px;line-height:1.5}
 .empty-records{grid-column:1/-1;padding:28px;color:var(--muted);text-align:center;font-size:14px}
 
 /* Summary band ------------------------------------------------------------------- */
 .summary-band{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:28px}
 .band-inner{max-width:var(--page-max);margin:auto;padding:28px var(--gutter-r) 30px var(--gutter-l)}
 .band-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px 24px;flex-wrap:wrap;margin-bottom:18px}
-.band-head h2{font-size:20px;font-weight:600;font-stretch:106%;margin:0;letter-spacing:-.3px}
-.band-head p{margin:0;font-size:13px;color:var(--muted)}
-.summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start}
-.chart{background:var(--paper);border:1px solid var(--line);padding:14px 16px 12px;min-width:0}
+.band-head h2{font-size:24px;font-weight:600;font-stretch:106%;margin:0;letter-spacing:-.4px}
+.band-head p{margin:0;font-size:13px;color:var(--muted);max-width:70ch}
+.summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 36px}
+.chart-stack{display:grid;grid-template-rows:auto 1fr;gap:18px;min-width:0}
+.chart{border-top:3px double var(--rule);padding:12px 0 10px;min-width:0}
 .chart.decades{grid-column:1/-1}
-.chart h3{font-size:13.5px;font-weight:600;margin:0 0 2px}
-.chart .chart-sub{font-size:11.5px;color:var(--muted);margin:0 0 12px;font-family:var(--mono)}
-.decades-plot{position:relative;height:190px;margin:22px 0 0}
+.chart h3{font-size:14px;font-weight:600;margin:0 0 2px}
+.chart .chart-sub{font-size:13px;color:var(--muted);margin:0 0 12px;font-family:var(--mono);line-height:1.5}
+.chart-key{font-size:13px;color:var(--muted);line-height:1.5;margin:12px 0 0;max-width:60ch}
+.decades-plot{position:relative;height:190px;margin:24px 0 0}
 .decade-grid{position:absolute;inset:0 0 22px 38px}
-.decade-grid div{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
-.decade-grid div span{position:absolute;left:-38px;top:0;transform:translateY(-50%);font-family:var(--mono);font-size:11px;color:var(--muted);width:30px;text-align:right}
-.decade-track{position:absolute;inset:0 0 22px 38px;display:flex;align-items:flex-end;gap:2px}
-.decade-bar{flex:1 1 0;min-width:0;height:calc(var(--h) * 1%);background:var(--rose-dark);border-radius:2px 2px 0 0;position:relative;min-height:0;display:block}
-.decade-bar[data-count="0"]{background:transparent;height:100%;pointer-events:none}
-.decade-bar:hover,.decade-bar:focus-visible{background:var(--rose-deep)}
-.decade-bar .decade-count{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:var(--ink-2);white-space:nowrap}
-.decade-axis{position:absolute;left:38px;right:0;bottom:0;height:20px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.decade-grid div{position:absolute;left:0;right:0;border-top:1px solid var(--line-2)}
+.decade-grid div span{position:absolute;left:-38px;top:0;transform:translateY(-50%);font-family:var(--mono);font-size:12px;color:var(--muted);width:30px;text-align:right}
+.decade-track{position:absolute;inset:0 0 22px 38px;display:flex;align-items:stretch;gap:2px}
+.decade-band{flex:1 1 0;min-width:0;height:100%;position:relative;display:block;border-radius:2px}
+button.decade-band:hover,button.decade-band:focus-visible{background:#86574e14}
+.decade-bar{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:24px;height:calc(var(--h) * 1%);background:var(--rose-dark);border-radius:4px 4px 0 0;display:block;pointer-events:none}
+.decade-band:hover .decade-bar,.decade-band:focus-visible .decade-bar{background:var(--rose-deep)}
+.decade-bar .decade-count{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:12px;color:var(--ink-2);white-space:nowrap}
+.decade-axis{position:absolute;left:38px;right:0;bottom:0;height:20px;font-family:var(--mono);font-size:12px;color:var(--muted)}
 .decade-axis span{position:absolute;transform:translateX(-50%);top:5px;white-space:nowrap}
 .decade-axis span:first-child{transform:none}
-.bar-list{display:grid;gap:4px;margin:0;padding:0;list-style:none}
-.bar-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) 30px;gap:9px;align-items:center;font-size:12.5px;line-height:1.2;padding:3px 4px;text-align:left;width:100%;color:var(--ink);border-radius:2px}
-button.bar-row:hover,button.bar-row:focus-visible{background:var(--paper-2)}
-.bar-label{display:flex;align-items:center;gap:6px;min-width:0}.bar-label>span{min-width:0;overflow-wrap:anywhere}
+.bar-list{display:grid;gap:2px;margin:0;padding:0;list-style:none}
+.bar-list li{break-inside:avoid}
+.bar-row{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) 32px;gap:9px;align-items:center;font-size:13px;line-height:1.25;min-height:28px;padding:3px 4px;text-align:left;width:100%;color:var(--ink);border-radius:2px}
+button.bar-row:hover,button.bar-row:focus-visible{background:#86574e14}
+.bar-label{display:flex;align-items:center;gap:6px;min-width:0}
 .bar-label svg{flex-shrink:0}
+.bar-label>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-track{height:12px;background:var(--rose-light);border-radius:2px;overflow:hidden;min-width:0}
 .bar-fill{display:block;height:100%;background:var(--rose-dark);border-radius:2px;width:0}
 .bar-value{font-family:var(--mono);font-size:12px;color:var(--ink-2);text-align:right}
@@ -296,35 +307,39 @@ button.bar-row:hover,button.bar-row:focus-visible{background:var(--paper-2)}
 .accessions{background:var(--paper)}
 .ledger-scroll{overflow:auto;border:1px solid var(--line-2);max-height:620px;scrollbar-gutter:stable}
 table.ledger{width:100%;border-collapse:collapse;font-size:13px;min-width:680px}
-.ledger th{position:sticky;top:0;background:var(--paper-2);z-index:1;text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 10px;border-bottom:1px solid var(--line-2);font-weight:500}
+.ledger th{position:sticky;top:0;background:var(--paper-2);z-index:1;text-align:left;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 10px;border-bottom:1px solid var(--line-2);font-weight:500}
 .ledger td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 .ledger tr.century th{position:static;background:var(--rose-light);color:var(--rose-deep);font-weight:600;padding:6px 10px;letter-spacing:.08em}
-.ledger .year,.ledger .no{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+.ledger .year,.ledger .no{font-family:var(--mono);font-size:13px;color:var(--ink-2);white-space:nowrap}
 .ledger .year.collected{color:var(--muted)}
 .ledger .record-link{font-size:13px;text-align:left;color:var(--rose-dark);padding:0;text-decoration:underline;text-underline-offset:3px;font-weight:600}
 .ledger .record-link:hover{color:var(--rose-deep)}
-.ledger tr.dim td{opacity:.42}
+.ledger .binomial{display:block;font-family:var(--mono);font-style:italic;font-size:12px;color:var(--muted)}
 .ledger .taxon-cell{display:flex;align-items:center;gap:6px;white-space:nowrap}
 .ledger .prov-cell{display:flex;align-items:center;gap:6px;white-space:nowrap;color:var(--ink-2);font-size:12px}
-.ledger-note{font-size:11.5px;color:var(--muted);margin:8px 0 0;font-family:var(--mono);line-height:1.5}
+.ledger tr.dim td{color:var(--muted)}
+.ledger tr.dim .record-link{color:var(--muted);text-decoration:none;font-weight:500;pointer-events:none;cursor:default}
+.ledger tr.dim svg{opacity:.62}
+.ledger-note{font-size:12px;color:var(--muted);margin:8px 0 0;font-family:var(--mono);line-height:1.5;max-width:70ch}
 
 /* Catalogue notes ------------------------------------------------------------------- */
 .method{border-top:1px solid var(--line);background:var(--paper)}
-.notes{columns:2;column-gap:48px}
-.note{break-inside:avoid;padding:12px 0 14px;border-top:1px solid var(--line)}
-.note h3{font-size:14px;font-weight:600;margin:0 0 6px}
-.note p,.note li{font-size:13.5px;line-height:1.65;color:var(--ink-2);margin:6px 0}
-.note code{font-family:var(--mono);font-size:12px;background:var(--paper-2);padding:1px 4px;border-radius:2px}
+.notes{columns:26em;column-gap:48px}
+.note{break-inside:avoid;padding:12px 0 14px;border-top:1px solid var(--line);overflow-wrap:anywhere}
+.note h3{font-size:17px;font-weight:600;margin:0 0 6px}
+.note p,.note li{font-size:15px;line-height:1.6;color:var(--ink-2);margin:6px 0}
+.note code{font-family:var(--mono);font-size:13px;background:var(--paper-2);padding:1px 4px;border-radius:2px}
 .note ul{padding-left:20px;margin:6px 0}
 .note li b{font-family:var(--mono);font-weight:500;color:var(--ink)}
 
 /* Footer */
-.cat-footer{background:#e7e5e7;padding:26px var(--gutter-r) 30px var(--gutter-l);display:flex;justify-content:space-between;align-items:flex-start;gap:18px 24px;flex-wrap:wrap;font-size:12px;color:#565156}
+.cat-footer{background:var(--brown);color:var(--ivory);padding:26px var(--gutter-r) 30px var(--gutter-l);display:flex;justify-content:space-between;align-items:flex-start;gap:18px 24px;flex-wrap:wrap;font-size:13px}
 .cat-footer>div{display:flex;flex-direction:column;gap:4px}
-.cat-footer strong{font-size:18px;font-weight:600;color:var(--rose-dark)}
+.cat-footer strong{font-size:18px;font-weight:600;color:var(--ivory-rose)}
+.cat-footer b{color:var(--ivory-bright)}
 .cat-footer p{line-height:1.8;margin:0}
-.cat-footer .mono{font-size:11.5px}
-.cat-footer .text-button{font-size:12px}
+.cat-footer .mono{font-size:12px}
+.cat-footer .text-button{font-size:13px;color:var(--ivory-link)}
 
 /* Dialogs ------------------------------------------------------------------- */
 .record-dialog,.about-dialog{border:0;padding:0;color:var(--ink);background:#fff;max-height:94dvh;box-shadow:0 20px 90px #1c171755;border-radius:3px}
@@ -336,8 +351,8 @@ dialog::backdrop{background:#322b274a;backdrop-filter:blur(2px)}
 .dialog-toolbar>div{display:flex;gap:6px}
 .dialog-toolbar .icon-button{width:32px;min-height:32px}
 .record-hero{padding:22px 26px 18px;border-bottom:1px solid var(--line);background:var(--plate)}
-.record-hero .record-taxonomy{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);margin-bottom:8px;font-family:var(--mono)}
-.record-hero h2{font-size:28px;font-weight:600;font-stretch:104%;letter-spacing:-.5px;line-height:1.15;margin:0}
+.record-hero .record-taxonomy{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);margin-bottom:8px;font-family:var(--mono)}
+.record-hero h2{font-size:28px;font-weight:600;font-stretch:104%;letter-spacing:-.5px;line-height:1.15;margin:0;overflow-wrap:anywhere}
 .record-hero .binomial{font-style:italic;color:var(--muted);font-size:15px;margin:6px 0 12px}
 .record-hero .record-quick{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--brown);margin:10px 0 0;font-family:var(--mono)}
 .record-body{padding:0 26px 26px}
@@ -345,18 +360,18 @@ dialog::backdrop{background:#322b274a;backdrop-filter:blur(2px)}
 .record-section h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 10px;color:var(--rose-deep)}
 .record-section dl{margin:0}
 .field{display:grid;grid-template-columns:132px minmax(0,1fr);gap:12px;padding:6px 0;font-size:14px;border-bottom:1px dotted var(--line)}
-.field dt{color:var(--muted);font-size:11.5px;padding-top:3px;font-family:var(--mono)}
+.field dt{color:var(--muted);font-size:12px;padding-top:3px;font-family:var(--mono)}
 .field dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .field.long{display:block}
 .field.long dt{margin-bottom:5px}
 .field.long dd{line-height:1.65}
 .missing{color:#77716b;font-style:italic}
-.badge{font-size:11px;border:1px solid #d4c6bf;border-radius:2px;padding:2px 5px;background:#faf4f1;color:#7a5046;display:inline-block;font-family:var(--mono)}
+.badge{font-size:12px;border:1px solid #d4c6bf;border-radius:2px;padding:2px 5px;background:#faf4f1;color:#7a5046;display:inline-block;font-family:var(--mono)}
 .record-note{background:var(--paper-2);border-left:2px solid var(--rose);padding:9px 12px;font-size:12px;line-height:1.65;color:var(--muted);margin:10px 0}
 .record-note.workbook-note{border-left-color:#9b8172}
 .material-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.material-tag{font-size:11.5px;border:1px solid #ddc9c1;border-radius:2px;background:#fcf6f2;padding:3px 7px;color:var(--rose-dark);font-family:var(--mono)}
-.about-content{padding:24px 30px 34px}
+.material-tag{font-size:12px;border:1px solid #ddc9c1;border-radius:2px;background:#fcf6f2;padding:3px 7px;color:var(--rose-dark);font-family:var(--mono)}
+.about-content{padding:24px 30px 34px;overflow-wrap:anywhere}
 .about-content h2{font-size:26px;font-weight:600;font-stretch:104%;letter-spacing:-.4px;margin:4px 0 10px}
 .about-content h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:22px 0 6px;color:var(--rose-deep)}
 .about-content p{font-size:14.5px;line-height:1.7;color:#595350;margin:8px 0}
@@ -371,6 +386,9 @@ body.modal-open{overflow:hidden}
   .bench{padding-left:18px}.drawer{padding-right:14px}
   .record-list{grid-template-columns:repeat(2,minmax(0,1fr))}
   .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chart.material{grid-column:1/-1}
+  .chart.material .bar-list{columns:2;column-gap:36px;display:block}
+  .chart.material .bar-list li{margin-bottom:2px}
   .figures>div{min-width:92px}.figures dd{font-size:22px}.figures dd.span{font-size:19px}
 }
 @media(max-width:900px){
@@ -380,27 +398,30 @@ body.modal-open{overflow:hidden}
   .drawer{position:static;max-height:none;overflow:visible;border-right:0;border-bottom:1px solid var(--line);padding:16px 0 10px;display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
   .drawer-head,.drawer>label,.search-box,.drawer>.help,.drawer-note{grid-column:1/-1}
   .drawer-note{display:none}
-  .filter-section:last-of-type{grid-column:1/-1}
+  .filter-section:last-of-type,.filter-section[open]{grid-column:1/-1}
+  .filter-section summary{min-height:40px;align-items:center}
+  .check-row,.material-options .check-row{min-height:40px}
   .bench{padding-left:0;padding-top:16px}
-  .notes{columns:1}
 }
 @media(max-width:700px){
   .cat-header{min-height:56px;padding-block:9px;gap:12px}
   .brand{font-size:17px;white-space:normal;line-height:1.25;max-width:190px}
   .cat-header-title{display:none}
-  .header-button{font-size:12px}
+  .header-button{font-size:13px;min-height:40px}
   h1{font-size:27px;max-width:100%}
   .lede{font-size:14px}
   .figures{gap:8px}.figures>div{flex:1 1 44%;min-width:0}
+  .text-button{min-height:40px;display:inline-flex;align-items:center}
   .results-bar{align-items:center;gap:8px}
-  .dataset-action .button{font-size:12px;min-height:34px;padding:6px 9px}
+  .dataset-action .button{font-size:12px;min-height:40px;padding:6px 9px}
   .dataset-status{max-width:150px;text-align:right;line-height:1.35}
-  .view-tabs button{padding:9px 10px 8px;font-size:11.5px;letter-spacing:.03em}
+  .view-tabs button{padding:11px 10px 10px;font-size:13px;letter-spacing:.03em;min-height:40px}
   .map-heading{padding:12px;gap:10px}.map-heading h2{font-size:15px}
-  .map-projection{font-size:10px;top:9px;left:10px}
-  .map-controls{bottom:10px;right:8px}.map-controls .icon-button{width:30px;min-width:30px;min-height:30px}
-  .map-legend{padding:10px 12px;gap:8px 10px;font-size:11.5px}.legend-group{padding-left:0;border-left:0}
-  .map-foot{padding:0 12px 9px;font-size:11px;flex-direction:column;gap:3px}
+  .projection button{min-height:36px}
+  .map-projection{font-size:12px;top:9px;left:10px}
+  .map-controls{bottom:10px;right:8px}.map-controls .icon-button{width:40px;min-width:40px;min-height:40px}
+  .map-legend{padding:10px 12px;gap:8px 10px;font-size:12px}.legend-group{padding-left:0;border-left:0}
+  .map-foot{padding:0 12px 9px;font-size:12px;flex-direction:column;gap:3px}
   .view-note{padding:9px 12px}
   .map-panel>.time-panel{padding:10px 12px}
   .timeline{padding-left:40px;padding-right:85px}
@@ -412,10 +433,29 @@ body.modal-open{overflow:hidden}
   .record-list-heading{flex-direction:column;align-items:flex-start;gap:8px}
   .record-list-heading>div:last-child{width:100%;justify-content:space-between}
   .record-list{grid-template-columns:1fr;max-height:480px}
-  .summary-grid{grid-template-columns:1fr}
+  .summary-grid{grid-template-columns:1fr;gap:18px}
+  .chart-stack{display:contents}
+  .chart.material{grid-column:auto}
+  .chart.material .bar-list{columns:1;display:grid}
+  button.bar-row{min-height:40px}
   .decades-plot{height:170px}
   .decade-axis span:nth-child(even){display:none}
   .band-inner{padding-block:22px 24px}
+  /* Ledger: two-line entries, no sideways scroll */
+  table.ledger{min-width:0;display:block}
+  .ledger thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  .ledger tbody{display:block}
+  .ledger tr{display:block;padding:6px 12px 8px;border-bottom:1px solid var(--line)}
+  .ledger tr.century{padding:0}
+  .ledger tr.century th{display:block;position:static}
+  .ledger td{display:inline;padding:0;border:0}
+  .ledger td.year,.ledger td.no{margin-right:10px}
+  .ledger td.spec::after{content:"\A";white-space:pre}
+  .ledger .binomial{display:inline-block;white-space:nowrap;margin-left:8px;vertical-align:middle}
+  .ledger td.taxon::after,.ledger td.site::after{content:" · ";color:var(--muted)}
+  .ledger .taxon-cell,.ledger .prov-cell{display:inline-flex;vertical-align:middle;white-space:normal}
+  .ledger .record-link{min-height:40px;display:inline-flex;align-items:center}
+  .ledger td.year,.ledger td.no{line-height:40px;vertical-align:middle}
   .record-dialog{margin:2dvh auto;max-height:96dvh;width:calc(100% - 18px)}
   .record-hero{padding:18px}.record-hero h2{font-size:24px}
   .record-body{padding:0 18px 22px}
@@ -432,7 +472,7 @@ body.modal-open{overflow:hidden}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 @media print{
-  .cat-header,.drawer,.result-actions,.time-panel,.view-tabs,.projection,.map-controls,.record-browser,.cat-footer,.dialog-toolbar,.summary-band,.accessions{display:none!important}
+  .cat-header,.drawer,.result-actions,.time-panel,.view-tabs,.projection,.map-controls,.record-browser,.cat-footer,.dialog-toolbar,.summary-band,.accessions,.skip,.skip-map{display:none!important}
   .workbench{display:block;padding:0}.bench{padding:0}
   .map-panel{break-inside:avoid}
   dialog[open]{position:static;width:100%;max-height:none;box-shadow:none;margin:0;overflow:visible}
@@ -443,7 +483,7 @@ body.modal-open{overflow:hidden}
 }</style>
 </head>
 <body>
-<a class="skip" href="#workspace">Skip to the catalogue</a>
+<a class="skip" href="#workspace" id="skipToCatalogue">Skip to the catalogue</a>
 <header class="cat-header">
   <a class="brand" href="https://mammothhistorylab.com/" target="_blank" rel="noopener">The Mammoth History Lab</a>
   <p class="cat-header-title"><span>Catalogue of permafrost finds</span><span class="mono">Edition 2026-10-28</span></p>
@@ -452,9 +492,9 @@ body.modal-open{overflow:hidden}
 <main>
   <section class="title-plate" aria-labelledby="atlasTitle">
     <div class="title-plate-inner">
-      <p class="eyebrow">Soft-tissue specimen database · Sheet1 of SOFT_TISSUE_Project_Database_2026_10_28_AO.xlsx</p>
+      <p class="eyebrow">Mammoth History Lab · Edition 2026-10-28</p>
       <h1 id="atlasTitle">Permafrost-Preserved Megafaunal Specimens</h1>
-      <p class="lede">A catalogue of every soft-tissue find in the Lab’s database: where each specimen was discovered, how its position is documented, when it was found and how old the sources say it is.</p>
+      <p class="lede">A catalogue of every soft-tissue find in the Lab’s database. It shows where each specimen was discovered, how its position is documented, when it was found and how old the sources say it is.</p>
       <dl class="figures">
         <div><dt>Records</dt><dd id="totalStat">84</dd></div>
         <div><dt>With coordinates</dt><dd>83</dd></div>
@@ -466,7 +506,7 @@ body.modal-open{overflow:hidden}
 
   <div class="workbench" id="workspace" tabindex="-1">
     <aside class="drawer" aria-label="Filter specimen records">
-      <div class="drawer-head"><h2>Drawer</h2><button class="text-button" id="reset">Reset all</button></div>
+      <div class="drawer-head"><h2>Filters</h2><button class="text-button" id="reset">Reset all</button></div>
       <label for="search" class="sr-only">Search all record fields</label>
       <div class="search-box"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Name, place, source, ID" autocomplete="off"></div>
       <p class="help">Searches names, discovery sites, ages, provenance labels and source references.</p>
@@ -477,7 +517,7 @@ body.modal-open{overflow:hidden}
         <label class="select-label" for="ageFilter">Specimen age</label><select id="ageFilter"><option value="all">All age records</option><option value="dated">Numeric age recorded</option><option value="missing">No numeric age recorded</option><option value="unparsed">Source text only / no numeric reading</option></select>
         <label class="select-label" for="mappedFilter">Map position</label><select id="mappedFilter"><option value="all">All records</option><option value="mapped">Coordinates recorded</option><option value="unmapped">No coordinates recorded</option></select>
       </details>
-      <p class="drawer-note"><strong>A record of finds, not of animals.</strong> Point density reflects collecting and documentation. Placeholder positions mark a region rather than a find spot.</p>
+      <p class="drawer-note"><strong>This is a record of finds;</strong> point density reflects collecting, not animal abundance. Placeholder positions mark a region rather than a find spot.</p>
     </aside>
 
     <section class="bench" aria-label="Discovery map results">
@@ -490,6 +530,7 @@ body.modal-open{overflow:hidden}
       </div>
       <section id="mapPanel" class="map-panel plate" role="tabpanel" aria-labelledby="tab-sites">
         <div class="map-heading"><div><h2 id="mapTitle">Discovery sites</h2><p id="mapSubtitle">Select any point to open its specimen record.</p></div><div class="map-view-controls"><div class="projection" role="group" aria-label="Map projection"><button data-projection="flat" aria-pressed="true">Flat map</button><button data-projection="globe" aria-pressed="false">Polar globe</button></div><button id="globeSpin" class="text-button globe-spin" aria-label="Toggle automatic globe rotation" aria-pressed="false" disabled>Rotate</button></div></div>
+        <a class="skip-map" href="#discoveryChronology" id="skipMap">Skip map points</a>
         <div class="map-canvas-wrap" id="mapStage">
           <svg class="map-surface" id="atlasMap" viewBox="0 0 1000 570" tabindex="0" role="group" aria-label="Interactive map. Use plus and minus to zoom, arrow keys to pan or rotate, and Home to reset."></svg>
           <canvas class="map-surface" id="classicGlobe" tabindex="0" role="img" aria-label="Rotatable 3D globe with individual specimens. Drag or use arrow keys to rotate; use the record list below for keyboard access to each specimen." hidden></canvas>
@@ -498,13 +539,13 @@ body.modal-open{overflow:hidden}
           <div id="mapEmpty" class="map-empty" hidden><h3>No mapped records in this view</h3><p>Try adjusting the filters, or inspect the matching records below.</p><button class="button" id="emptyReset">Reset filters</button></div>
           <div id="mapTooltip" class="map-tooltip" role="tooltip" hidden></div>
         </div>
-        <section class="time-panel" id="discoveryChronology" aria-label="Discovery chronology">
+        <section class="time-panel" id="discoveryChronology" aria-label="Discovery chronology" tabindex="-1">
           <div class="time-heading"><label for="endYear">Discovery chronology</label><div class="time-mode"><label class="sr-only" for="timeMode">Discovery chronology mode</label><select id="timeMode"><option value="through">Found by year</option><option value="between">Found between years</option></select><button id="timeReset" class="text-button">All years</button></div></div>
           <div class="timeline"><svg id="histogram" viewBox="0 0 800 38" preserveAspectRatio="none" aria-label="Recorded discoveries per decade; select a bar to filter to that decade"></svg></div>
           <div class="year-controls"><button id="play" class="icon-button" aria-label="Play discovery chronology" title="Play discovery chronology">▶</button><label id="startWrap" hidden><span class="sr-only">Start year</span><input id="startYear" type="number" min="1692" max="2024" value="1692"></label><input id="yearRange" type="range" min="1692" max="2024" value="2024" aria-label="Latest discovery year"><label><span class="sr-only">End year</span><input id="endYear" type="number" min="1692" max="2024" value="2024"></label></div>
           <div class="time-caption"><span>1692</span><span id="timeCaption">All recorded find years</span><span>2024</span></div>
         </section>
-        <section class="time-panel age-panel" id="specimenChronology" aria-labelledby="agePanelTitle" hidden>
+        <section class="time-panel age-panel" id="specimenChronology" aria-labelledby="agePanelTitle" tabindex="-1" hidden>
           <div class="time-heading"><h3 id="agePanelTitle">Specimen ages</h3><div class="time-mode"><label class="sr-only" for="ageMode">Specimen age selection</label><select id="ageMode"><option value="all">All recorded ages</option><option value="between">Select an age interval</option></select><button id="ageReset" class="text-button">All ages</button></div></div>
           <p class="age-context">Years as recorded in the sources · No translation or recalibration</p>
           <div class="age-plot"><svg id="ageTimeline" viewBox="0 0 800 180" preserveAspectRatio="none" role="group" aria-label="Recorded specimen ages. Each row is one specimen. Lines retain ranges and uncertainty; arrows indicate lower limits."></svg><p id="agePlotEmpty" hidden>No numeric age positions in this selection.</p></div>
@@ -534,11 +575,11 @@ body.modal-open{overflow:hidden}
     <div class="band-inner">
       <div class="band-head"><h2 id="accessionsTitle">Accessions ledger</h2><p id="ledgerStatus">All 84 records in order of discovery year. Select a specimen to open its record.</p></div>
       <div class="ledger-scroll" id="ledger" tabindex="0" aria-label="Scrollable accessions ledger"></div>
-      <p class="ledger-note">Dimmed lines do not match the current drawer filters; opening one resets the drawer. Years in brackets are collection years used where no discovery year is recorded.</p>
+      <p class="ledger-note">Lines outside the current filters are dimmed and cannot be opened until the filters change. Years in brackets are collection years used where no discovery year is recorded.</p>
     </div>
   </section>
 
-  <section class="method" id="method" aria-labelledby="methodTitle">
+  <section class="method" id="method" aria-labelledby="methodTitle" tabindex="-1">
     <div class="band-inner">
       <div class="band-head"><h2 id="methodTitle">Catalogue notes</h2><p>Method, conventions and citation for edition 2026-10-28 (built 2026-10-28).</p></div>
       <div class="notes">
@@ -561,7 +602,7 @@ body.modal-open{overflow:hidden}
 <li><b>#146</b> (row 84): An unlabelled workbook note says the corpse is old enough to defy standard radiocarbon dating; the age text is retained verbatim.</li></ul></div>
         <div class="note"><h3>Discovery years and specimen ages</h3><p><b>Discovery sites</b> uses recorded find years, spanning 1692–2024 in this workbook, with the collection year as a fallback. <b>Specimen ages</b> uses the text in Age_BP_radiocarbon and does not inherit the discovery-year filter. Ranges and stated ± uncertainty are retained as intervals, arrows show lower limits, and alternative values are evaluated separately. Digit groups separated by a space, comma or period (“29 500”, “34, 450”, “31.700”) are read as thousands. Nothing is translated, standardized or recalibrated: BP conventionally refers to years before 1950, but calibration and notation differ between sources, and the numeric display does not make these timescales equivalent.</p></div>
         <div class="note"><h3>Dataset and citation</h3><p><b>Borealis · University of Toronto Dataverse</b><br><span data-dataset-doi>DOI: forthcoming</span></p><p>The dataset link and DOI will be added when publication is complete; “See dataset” will open that publication. Published and archival reference keys are reproduced from the workbook; the published dataset will provide the authoritative citation and reuse terms.</p></div>
-        <div class="note"><h3>Using the catalogue</h3><p>Taxon and provenance choices are inclusive; material filters match any selected tag. Counts in the drawer reflect the other active filters. Chronology bars select a decade. Every map point, ledger line and label plate opens its record. Ctrl/⌘ + scroll zooms the map; ordinary scrolling moves the page. All data, coastline geometry and the globe renderer are embedded in this HTML.</p></div>
+        <div class="note"><h3>Using the catalogue</h3><p>Taxon and provenance choices are inclusive; material filters match any selected tag. Counts in the filter panel reflect the other active filters. Chronology bars select a decade. Every map point, ledger line and label plate opens its record. Ctrl/⌘ + scroll zooms the map; ordinary scrolling moves the page. All data, coastline geometry and the globe renderer are embedded in this HTML.</p></div>
       </div>
     </div>
   </section>
@@ -1188,8 +1229,9 @@ const spin=$('globeSpin');
 spin.onclick=()=>{if(spinTimer){stopSpin();return;}state.projection='globe';camera={zoom:1,x:0,y:0};changed();spin.setAttribute('aria-pressed','true');spin.textContent='Pause rotation';spinTimer=setInterval(()=>{if(globeEngine)globeEngine.rotate(.006);else rotation.lon=(rotation.lon+.4)%360;requestMap();},65);};
 const initialSelected=state.selected;changed();if(initialSelected!=null&&visible.some(r=>r.id===initialSelected))openRecord(initialSelected);
 })();</script>
-<script>/* Variant B extras: the catalogue summary charts and the accessions ledger. Both read the embedded
-   payload and drive the engine through the URL hash, which the engine already treats as its state. */
+<script>/* Variant B extras: the catalogue summary charts, the accessions ledger and the in-page skip links.
+   Everything reads the embedded payload and drives the engine through the URL hash, which the engine
+   already treats as its state; in-page links never write the hash, so filters are not lost. */
 (() => {
 'use strict';
 const payload = JSON.parse(document.getElementById('payload').textContent);
@@ -1199,13 +1241,17 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const clean = s => String(s ?? '').replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
 const PALETTE = globalThis.__ATLAS_PALETTE__ || {};
 const MATERIALS = {skin:'Skin & hide',hair:'Hair, fur & wool',flesh:'Flesh & muscle',organs:'Internal organs',trunk:'Trunk',keratin:'Hoofs, claws, nails & horn',carcass:'Whole / near-whole',softgeneric:'Soft tissue / mummified',connective:'Tendons & ligaments',unclassified:'No material tag assigned'};
+const MATERIAL_SHORT = {keratin:'Hoofs, claws, horn',softgeneric:'Soft tissue',unclassified:'No material tag'};
 const PROV_TEXT = {source_stated:'Source-stated',historical_map:'Historical map',inferred_historical_map:'Inferred / historical map',inferred:'Inferred',regional_placeholder:'Regional placeholder',unlocated:'Unlocated',unlabelled:'No provenance label'};
+const PROV_SHORT = {inferred_historical_map:'Inferred / hist. map'};
 const PROV_STYLE = {source_stated:'solid',historical_map:'derived',inferred_historical_map:'derived',inferred:'derived',regional_placeholder:'placeholder',unlocated:'placeholder',unlabelled:'placeholder'};
 const GRADE_TEXT = {4:'Complete',3:'Mostly complete',2:'Partial',1:'Fragments only',0:'Not recorded'};
+const MAPPED_TEXT = {mapped:'Coordinates recorded',unmapped:'No coordinates recorded'};
 const year = r => r.year_found || r.year_collected || r.timeline_year || null;
 const name = r => (r.common_name && r.common_name[1] === 'val') ? clean(r.common_name[0]) : clean(r.location);
 const recordID = r => String(r.source_id) + (r.duplicate_source_id ? ' · row ' + r.source_row : '');
 const provKey = r => r.coordinate_key || 'unlabelled';
+const isMapped = r => Number.isFinite(r.lat) && Number.isFinite(r.lon);
 const count = (list, fn) => { const m = new Map(); for (const r of list) { const k = fn(r); if (k == null) continue; m.set(k, (m.get(k) || 0) + 1); } return m; };
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1221,6 +1267,17 @@ function go(params, { merge = true, scrollTo = 'workspace' } = {}) {
   if (target) target.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
 }
 
+// In-page links: move focus without touching the hash (the engine reads the hash as filter state).
+function jumpTo(el) {
+  if (!el) return;
+  el.focus({ preventScroll: true });
+  el.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
+}
+function skipLink(link, resolve) {
+  if (!link) return;
+  link.addEventListener('click', e => { e.preventDefault(); jumpTo(resolve()); });
+}
+
 function provSymbol(style, size = 13, color = '#6f5a4e') {
   if (style === 'placeholder') return `<svg class="prov-swatch" viewBox="0 0 20 20" width="${size}" height="${size}" aria-hidden="true"><circle cx="10" cy="10" r="5" fill="none" stroke="${color}" stroke-width="1.8"/></svg>`;
   return `<svg class="prov-swatch" viewBox="0 0 20 20" width="${size}" height="${size}" aria-hidden="true"><circle cx="10" cy="10" r="4.2" fill="${color}"/>${style === 'derived' ? `<circle cx="10" cy="10" r="7.6" fill="none" stroke="${color}" stroke-width="1.2" stroke-dasharray="2.4 1.7"/>` : ''}</svg>`;
@@ -1229,14 +1286,15 @@ function taxonSwatch(taxon, size = 13) {
   return `<svg class="taxon-symbol" viewBox="0 0 20 20" width="${size}" height="${size}" aria-hidden="true"><circle cx="10" cy="10" r="6.2" fill="${esc(PALETTE[taxon] || '#b0a89f')}" stroke="#6e665f" stroke-width=".8"/></svg>`;
 }
 
-// One tooltip for every chart; shown on hover and keyboard focus.
+// One tooltip for every chart; shown on hover and keyboard focus, placed below the element unless
+// there is no room, 8 px clear of it so it never covers the element's own label or value.
 let tip = null;
 function showTip(el, html) {
   if (!tip) { tip = document.createElement('div'); tip.className = 'viz-tip'; tip.setAttribute('role', 'tooltip'); document.body.append(tip); }
   tip.innerHTML = html; tip.hidden = false;
   const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
-  let x = r.left + r.width / 2 - w / 2, y = r.top - h - 8;
-  if (y < 8) y = r.bottom + 8;
+  let x = r.left + r.width / 2 - w / 2, y = r.bottom + 8;
+  if (y + h > innerHeight - 8) y = r.top - h - 8;
   x = Math.max(8, Math.min(innerWidth - w - 8, x));
   tip.style.left = x + 'px'; tip.style.top = y + 'px';
 }
@@ -1256,27 +1314,29 @@ function decadesChart() {
   const max = Math.max(...bins.map(b => b.n)), step = max > 12 ? 5 : max > 6 ? 4 : 2, top = Math.ceil(max / step) * step;
   const busiest = bins.filter(b => b.n === max).map(b => b.d);
   const grid = []; for (let v = 0; v <= top; v += step) grid.push(`<div style="bottom:${(v / top * 100).toFixed(2)}%"><span>${v}</span></div>`);
-  const bars = bins.map(b => {
+  // Each decade is a full-height band (the hit target); the visible bar sits centred inside it.
+  const bands = bins.map(b => {
     const pct = (b.n / top * 100).toFixed(2), label = `${b.d}s`;
-    const text = `<b>${label}</b><br>${b.n} find${b.n === 1 ? '' : 's'} recorded${b.n ? '<br>Select to filter the map' : ''}`;
-    if (!b.n) return `<span class="decade-bar" data-count="0" aria-hidden="true"></span>`;
-    return `<button class="decade-bar" style="--h:${pct}" data-count="${b.n}" data-decade="${b.d}" data-tip="${esc(text)}" aria-label="${label}: ${b.n} finds. Filter the map to this decade.">${busiest.includes(b.d) ? `<span class="decade-count">${b.n}</span>` : ''}</button>`;
+    if (!b.n) return `<span class="decade-band" aria-hidden="true"></span>`;
+    const text = `<b>${label}</b><br>${b.n} find${b.n === 1 ? '' : 's'} recorded<br>Select to filter the map`;
+    return `<button class="decade-band" data-decade="${b.d}" data-tip="${esc(text)}" aria-label="${label}: ${b.n} finds. Filter the map to this decade."><span class="decade-bar" style="--h:${pct}">${busiest.includes(b.d) ? `<span class="decade-count">${b.n}</span>` : ''}</span></button>`;
   }).join('');
   const span = last + 10 - first, axis = [];
   for (let y = Math.ceil(first / 50) * 50; y <= last + 10; y += 50) axis.push(`<span style="left:${((y - first) / span * 100).toFixed(2)}%">${y}</span>`);
   const totalYears = `${Math.min(...years)}–${Math.max(...years)}`;
-  return `<section class="chart decades" aria-labelledby="chartDecades"><h3 id="chartDecades">Finds recorded per decade</h3><p class="chart-sub">${years.length} records with a discovery or collection year, ${totalYears} · busiest decade: ${busiest.map(d => d + 's').join(', ')} (${max})</p><div class="decades-plot" role="group" aria-label="Finds per decade, ${first}s to ${last}s"><div class="decade-grid" aria-hidden="true">${grid.join('')}</div><div class="decade-track">${bars}</div><div class="decade-axis" aria-hidden="true">${axis.join('')}</div></div></section>`;
+  return `<section class="chart decades" aria-labelledby="chartDecades"><h3 id="chartDecades">Finds recorded per decade</h3><p class="chart-sub">${years.length} records with a discovery or collection year, ${totalYears} · busiest decade: ${busiest.map(d => d + 's').join(', ')} (${max})</p><div class="decades-plot" role="group" aria-label="Finds per decade, ${first}s to ${last}s"><div class="decade-grid" aria-hidden="true">${grid.join('')}</div><div class="decade-track">${bands}</div><div class="decade-axis" aria-hidden="true">${axis.join('')}</div></div></section>`;
 }
 
-function barList({ id, title, sub, rows, total, param, labelFor, swatchFor, colorFor }) {
+function barList({ id, title, sub, rows, total, param, labelFor, shortFor, swatchFor, colorFor, extraClass = '', after = '' }) {
   const max = Math.max(...rows.map(r => r.n), 1);
   const items = rows.map(r => {
+    const full = labelFor(r.key), short = (shortFor && shortFor(r.key)) || full;
     const pct = (r.n / max * 100).toFixed(1), share = (r.n / total * 100).toFixed(0);
-    const tipText = `<b>${esc(labelFor(r.key))}</b><br>${r.n} of ${total} records (${share}%)${param ? '<br>Select to filter the map' : ''}`;
-    const inner = `<span class="bar-label">${swatchFor ? swatchFor(r.key) : ''}<span>${esc(labelFor(r.key))}</span></span><span class="bar-track"><span class="bar-fill" style="width:${pct}%${colorFor ? ';background:' + colorFor(r.key) : ''}"></span></span><span class="bar-value">${r.n}</span>`;
-    return param ? `<li><button class="bar-row" data-param="${param}" data-key="${esc(r.key)}" data-tip="${esc(tipText)}" aria-label="${esc(labelFor(r.key))}: ${r.n} of ${total} records. Filter the map.">${inner}</button></li>` : `<li><span class="bar-row" data-tip="${esc(tipText)}" tabindex="0">${inner}</span></li>`;
+    const tipText = `<b>${esc(full)}</b><br>${r.n} of ${total} records (${share}%)${param ? '<br>Select to filter the map' : ''}`;
+    const inner = `<span class="bar-label">${swatchFor ? swatchFor(r.key) : ''}<span${short !== full ? ` title="${esc(full)}"` : ''}>${esc(short)}</span></span><span class="bar-track"><span class="bar-fill" style="width:${pct}%${colorFor ? ';background:' + colorFor(r.key) : ''}"></span></span><span class="bar-value">${r.n}</span>`;
+    return param ? `<li><button class="bar-row" data-param="${param}" data-key="${esc(r.key)}" data-tip="${esc(tipText)}" aria-label="${esc(full)}: ${r.n} of ${total} records. Filter the map.">${inner}</button></li>` : `<li><span class="bar-row" data-tip="${esc(tipText)}">${inner}</span></li>`;
   }).join('');
-  return `<section class="chart" aria-labelledby="${id}"><h3 id="${id}">${esc(title)}</h3><p class="chart-sub">${esc(sub)}</p><ul class="bar-list">${items}</ul></section>`;
+  return `<section class="chart ${extraClass}" aria-labelledby="${id}"><h3 id="${id}">${esc(title)}</h3><p class="chart-sub">${esc(sub)}</p><ul class="bar-list">${items}</ul>${after}</section>`;
 }
 
 function renderSummary() {
@@ -1287,19 +1347,25 @@ function renderSummary() {
   const prov = count(RECS, provKey);
   const provOrder = Object.keys(payload.metadata.provenance_counts || {}).map(k => k.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'unlabelled');
   const provRows = [...new Set([...provOrder, ...prov.keys()])].filter(k => prov.has(k)).map(k => ({ key: k, n: prov.get(k) }));
+  const mapped = count(RECS, r => isMapped(r) ? 'mapped' : 'unmapped');
+  const mappedRows = ['mapped', 'unmapped'].filter(k => mapped.has(k)).map(k => ({ key: k, n: mapped.get(k) }));
   const grades = count(RECS, r => r.grade);
   const gradeRows = [4, 3, 2, 1, 0].filter(g => grades.has(g)).map(g => ({ key: g, n: grades.get(g) }));
   const mats = count(RECS.flatMap(r => r.facets.map(f => ({ f }))), x => x.f);
   const matRows = Object.keys(MATERIALS).filter(k => mats.has(k)).map(k => ({ key: k, n: mats.get(k) })).sort((a, b) => b.n - a.n);
+  const taxonChart = barList({ id: 'chartTaxa', title: 'Taxon groups', sub: `${total} records · Species_type column`, rows: taxonRows, total, param: 'taxa', labelFor: k => k, swatchFor: k => taxonSwatch(k), colorFor: k => PALETTE[k] || '#b0a89f' });
+  const gradeChart = barList({ id: 'chartGrade', title: 'Completeness', sub: 'Complete? column, as recorded', rows: gradeRows, total, param: null, labelFor: k => GRADE_TEXT[k] });
+  const provChart = barList({ id: 'chartProv', title: 'Coordinate provenance', sub: `${total} records · Location Provenance column`, rows: provRows, total, param: 'prov', labelFor: k => PROV_TEXT[k] || clean(k), shortFor: k => PROV_SHORT[k], swatchFor: k => provSymbol(PROV_STYLE[k] || 'placeholder'), after: '<p class="chart-key">Solid point: source-stated coordinate. Dashed ring: inferred or historical-map position. Hollow point: regional placeholder or unlocated find.</p>' });
+  const mappedChart = barList({ id: 'chartMapped', title: 'Map position', sub: 'Latitude and Longitude cells', rows: mappedRows, total, param: 'mapped', labelFor: k => MAPPED_TEXT[k] });
+  const matChart = barList({ id: 'chartMaterial', title: 'Preserved material', sub: 'Tags derived from Parts_found · a record can carry several', rows: matRows, total, param: 'material', labelFor: k => MATERIALS[k], shortFor: k => MATERIAL_SHORT[k], extraClass: 'material' });
   host.innerHTML = decadesChart()
-    + barList({ id: 'chartTaxa', title: 'Taxon groups', sub: `${total} records · Species_type column`, rows: taxonRows, total, param: 'taxa', labelFor: k => k, swatchFor: k => taxonSwatch(k), colorFor: k => PALETTE[k] || '#b0a89f' })
-    + barList({ id: 'chartProv', title: 'Coordinate provenance', sub: `${payload.stats.mapped} records with coordinates · Location Provenance column`, rows: provRows, total, param: 'prov', labelFor: k => PROV_TEXT[k] || clean(k), swatchFor: k => provSymbol(PROV_STYLE[k] || 'placeholder') })
-    + barList({ id: 'chartGrade', title: 'Completeness', sub: 'Complete? column, as recorded', rows: gradeRows, total, param: null, labelFor: k => GRADE_TEXT[k] })
-    + barList({ id: 'chartMaterial', title: 'Preserved material', sub: 'Tags derived from Parts_found · a record can carry several', rows: matRows, total, param: 'material', labelFor: k => MATERIALS[k] });
+    + `<div class="chart-stack">${taxonChart}${gradeChart}</div>`
+    + `<div class="chart-stack">${provChart}${mappedChart}</div>`
+    + matChart;
   attachTip(host);
   host.addEventListener('click', e => {
-    const bar = e.target.closest('.decade-bar[data-decade]');
-    if (bar) { const d = +bar.dataset.decade; go({ view: 'sites', from: String(d), to: String(d + 9), ageFrom: null, ageTo: null }); return; }
+    const band = e.target.closest('.decade-band[data-decade]');
+    if (band) { const d = +band.dataset.decade; go({ view: 'sites', from: String(d), to: String(d + 9), ageFrom: null, ageTo: null }); return; }
     const row = e.target.closest('.bar-row[data-param]');
     if (!row) return;
     const { param, key } = row.dataset;
@@ -1320,29 +1386,37 @@ function renderLedger() {
     const y = year(r), c = y ? Math.floor(y / 100) * 100 : null;
     if (c !== century) { century = c; html += `<tr class="century"><th scope="rowgroup" colspan="6">${c == null ? 'Year not recorded' : c + 's'}</th></tr>`; }
     const collected = !r.year_found && r.year_collected;
-    html += `<tr data-record="${esc(r.id)}"><td class="year${collected ? ' collected' : ''}">${y ? (collected ? '[' + y + ']' : y) : '—'}</td><td class="no">#${esc(recordID(r))}</td><td><button class="record-link" data-open="${esc(r.id)}" aria-label="Open ${esc(name(r))}, record ${esc(recordID(r))}">${esc(name(r))}</button>${r.binomial ? `<br><i class="mono" style="font-size:11.5px;color:var(--muted)">${esc(r.binomial)}</i>` : ''}</td><td><span class="taxon-cell">${taxonSwatch(r.species)}${esc(r.species)}</span></td><td>${esc(clean(r.location) || 'Not recorded')}</td><td><span class="prov-cell">${provSymbol(PROV_STYLE[provKey(r)] || 'placeholder')}${esc(PROV_TEXT[provKey(r)] || clean(r.coordinate_label))}</span></td></tr>`;
+    html += `<tr data-record="${esc(r.id)}"><td class="year${collected ? ' collected' : ''}">${y ? (collected ? '[' + y + ']' : y) : '—'}</td><td class="no">#${esc(recordID(r))}</td><td class="spec"><button class="record-link" data-open="${esc(r.id)}" aria-label="Open ${esc(name(r))}, record ${esc(recordID(r))}">${esc(name(r))}</button>${r.binomial ? `<span class="binomial">${esc(r.binomial)}</span>` : ''}</td><td class="taxon"><span class="taxon-cell">${taxonSwatch(r.species)}${esc(r.species)}</span></td><td class="site">${esc(clean(r.location) || 'Not recorded')}</td><td class="pos"><span class="prov-cell">${provSymbol(PROV_STYLE[provKey(r)] || 'placeholder')}${esc(PROV_TEXT[provKey(r)] || clean(r.coordinate_label))}</span></td></tr>`;
   }
   host.innerHTML = html + '</tbody></table>';
   host.addEventListener('click', e => {
-    const b = e.target.closest('[data-open]'); if (!b) return;
-    const tr = b.closest('tr'), dim = tr.classList.contains('dim');
-    go({ view: 'sites', record: b.dataset.open }, { merge: !dim });
+    const b = e.target.closest('[data-open]');
+    if (!b || b.getAttribute('aria-disabled') === 'true') return;
+    go({ view: 'sites', record: b.dataset.open });
   });
-  // The ledger mirrors the drawer: lines outside the engine's current result set are dimmed.
+  // The ledger mirrors the filters: lines outside the engine's current result set are dimmed and
+  // cannot be opened, so no click ever clears the filters silently.
   const list = $('recordList'), status = $('ledgerStatus');
   const sync = () => {
     const visible = new Set([...list.querySelectorAll('[data-record]')].map(b => b.dataset.record));
     let shown = 0;
-    for (const tr of host.querySelectorAll('tr[data-record]')) { const on = visible.has(tr.dataset.record); tr.classList.toggle('dim', !on); if (on) shown++; }
-    if (status) status.textContent = shown === RECS.length ? `All ${RECS.length} records in order of discovery year. Select a specimen to open its record.` : `${shown} of ${RECS.length} records match the drawer; the rest are dimmed. Select a specimen to open its record.`;
+    for (const tr of host.querySelectorAll('tr[data-record]')) {
+      const on = visible.has(tr.dataset.record), link = tr.querySelector('.record-link');
+      tr.classList.toggle('dim', !on);
+      if (on) { shown++; tr.removeAttribute('title'); link.removeAttribute('aria-disabled'); link.removeAttribute('tabindex'); }
+      else { tr.title = 'Outside the current filters'; link.setAttribute('aria-disabled', 'true'); link.setAttribute('tabindex', '-1'); }
+    }
+    if (status) status.textContent = shown === RECS.length ? `All ${RECS.length} records in order of discovery year. Select a specimen to open its record.` : `${shown} of ${RECS.length} records match the current filters; the rest are dimmed and cannot be opened. Select a specimen to open its record.`;
   };
   if (list) { new MutationObserver(sync).observe(list, { childList: true }); sync(); }
 }
 
 renderSummary();
 renderLedger();
+skipLink($('skipToCatalogue'), () => $('workspace'));
+skipLink($('skipMap'), () => [$('discoveryChronology'), $('specimenChronology'), $('legend')].find(el => el && !el.hidden));
 const toNotes = $('aboutToNotes');
-if (toNotes) toNotes.addEventListener('click', e => { e.preventDefault(); $('aboutDialog').close(); $('method').scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth' }); });
+if (toNotes) toNotes.addEventListener('click', e => { e.preventDefault(); $('aboutDialog').close(); jumpTo($('method')); });
 })();</script>
 </body>
 </html>
