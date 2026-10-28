@@ -362,7 +362,7 @@ function baseMap(){
     for(let i=0;i<=12;i++)grat.append(svgEl('line',{x1:i/12*w,y1:0,x2:i/12*w,y2:h}));frame.append(grat);
     frame.append(svgEl('path',{d:landText,class:'land',transform:`scale(${w/D.W},${h/D.H})`}));
     for(let lat=30;lat<=80;lat+=10){const p=projected(lat,-177,'flat',geometry);frame.append(svgEl('text',{x:p.x,y:p.y-4,class:'geo-small'},lat+'°N'));}
-    frame.append(svgEl('text',{x:w-14,y:h-12,class:'geo-small','text-anchor':'end'},'↑ N'));
+    frame.append(svgEl('text',{x:w-14,y:18,class:'geo-small','text-anchor':'end'},'↑ N'));
   }else{
     // WebGL fallback preserves an interactive sphere when hardware acceleration is unavailable.
     const R=Math.min(w-80,h-65)/2;frame.append(svgEl('circle',{cx:w/2,cy:h/2,r:R,fill:'#51433b',stroke:'#9b8172','stroke-width':1}));
