@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Catalogue and discovery map of {{TOTAL}} permafrost-preserved megafaunal specimen records assembled by the Mammoth History Lab: find sites, coordinate provenance, discovery years and recorded ages.">
+<meta name="color-scheme" content="light">
+<meta name="atlas-edition" content="{{EDITION}}">
+<meta name="atlas-source" content="{{SOURCE_FILE}}">
+<meta name="atlas-variant" content="B · museum catalogue">
+<title>Catalogue of Permafrost Finds · Mammoth History Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>{{CSS}}</style>
+</head>
+<body>
+<a class="skip" href="#workspace">Skip to the catalogue</a>
+<header class="cat-header">
+  <a class="brand" href="https://mammothhistorylab.com/" target="_blank" rel="noopener">The Mammoth History Lab</a>
+  <p class="cat-header-title"><span>Catalogue of permafrost finds</span><span class="mono">Edition {{SOURCE_DATE}}</span></p>
+  <div class="cat-header-actions"><button id="aboutOpen" class="header-button">About &amp; sources</button></div>
+</header>
+<main>
+  <section class="title-plate" aria-labelledby="atlasTitle">
+    <div class="title-plate-inner">
+      <p class="eyebrow">Soft-tissue specimen database · {{SOURCE_SHEET}} of {{SOURCE_FILE}}</p>
+      <h1 id="atlasTitle">Permafrost-Preserved Megafaunal Specimens</h1>
+      <p class="lede">A catalogue of every soft-tissue find in the Lab’s database: where each specimen was discovered, how its position is documented, when it was found and how old the sources say it is.</p>
+      <dl class="figures">
+        <div><dt>Records</dt><dd id="totalStat">{{TOTAL}}</dd></div>
+        <div><dt>With coordinates</dt><dd>{{MAPPED}}</dd></div>
+        <div><dt>Taxon groups</dt><dd>{{TAXA_COUNT}}</dd></div>
+        <div><dt>Find years</dt><dd class="span">{{YEAR_SPAN}}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="workbench" id="workspace" tabindex="-1">
+    <aside class="drawer" aria-label="Filter specimen records">
+      <div class="drawer-head"><h2>Drawer</h2><button class="text-button" id="reset">Reset all</button></div>
+      <label for="search" class="sr-only">Search all record fields</label>
+      <div class="search-box"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Name, place, source, ID" autocomplete="off"></div>
+      <p class="help">Searches names, discovery sites, ages, provenance labels and source references.</p>
+      <details class="filter-section" open><summary>Taxon <span id="taxonActive">All selected</span></summary><div class="section-actions"><button id="taxaAll" class="text-button">Select all</button><button id="taxaNone" class="text-button">Clear</button></div><div id="taxa"></div></details>
+      <details class="filter-section" open><summary>Provenance <span id="provenanceActive">All classes</span></summary><p class="help">How each find position was obtained, as labelled in the workbook’s Location Provenance column.</p><div class="section-actions"><button id="provAll" class="text-button">Select all</button><button id="provNone" class="text-button">Clear</button></div><div id="provenance"></div></details>
+      <details class="filter-section"><summary>Preserved material <span id="materialActive">Any</span></summary><p class="help">Match any selected material. Tags are derived from the parts description.</p><div id="materials" class="material-options"></div></details>
+      <details class="filter-section"><summary>Record details</summary>
+        <label class="select-label" for="ageFilter">Specimen age</label><select id="ageFilter"><option value="all">All age records</option><option value="dated">Numeric age recorded</option><option value="missing">No numeric age recorded</option><option value="unparsed">Source text only / no numeric reading</option></select>
+        <label class="select-label" for="mappedFilter">Map position</label><select id="mappedFilter"><option value="all">All records</option><option value="mapped">Coordinates recorded</option><option value="unmapped">No coordinates recorded</option></select>
+      </details>
+      <p class="drawer-note"><strong>A record of finds, not of animals.</strong> Point density reflects collecting and documentation. Placeholder positions mark a region rather than a find spot.</p>
+    </aside>
+
+    <section class="bench" aria-label="Discovery map results">
+      <div class="results-bar"><p id="resultCount" role="status" aria-live="polite"><strong>{{TOTAL}}</strong> of {{TOTAL}} records</p><div class="result-actions dataset-action"><a class="button" id="seeDataset" role="link" aria-disabled="true" tabindex="0" aria-describedby="datasetStatus">See dataset <span aria-hidden="true">↗</span></a><span class="dataset-status" id="datasetStatus">Borealis · publication forthcoming</span></div></div>
+      <div class="active-filters" id="activeFilters" aria-label="Active filters"></div>
+      <div class="view-tabs" role="tablist" aria-label="Research view">
+        <button id="tab-sites" role="tab" aria-controls="mapPanel" aria-selected="true" data-view="sites">Discovery sites</button>
+        <button id="tab-ages" role="tab" aria-controls="mapPanel" aria-selected="false" tabindex="-1" data-view="ages">Specimen ages</button>
+        <button id="tab-table" role="tab" aria-controls="tablePanel" aria-selected="false" tabindex="-1" data-view="table">Table</button>
+      </div>
+      <section id="mapPanel" class="map-panel plate" role="tabpanel" aria-labelledby="tab-sites">
+        <div class="map-heading"><div><h2 id="mapTitle">Discovery sites</h2><p id="mapSubtitle">Select any point to open its specimen record.</p></div><div class="map-view-controls"><div class="projection" role="group" aria-label="Map projection"><button data-projection="flat" aria-pressed="true">Flat map</button><button data-projection="globe" aria-pressed="false">Polar globe</button></div><button id="globeSpin" class="text-button globe-spin" aria-label="Toggle automatic globe rotation" aria-pressed="false" disabled>Rotate</button></div></div>
+        <div class="map-canvas-wrap" id="mapStage">
+          <svg class="map-surface" id="atlasMap" viewBox="0 0 1000 570" tabindex="0" role="group" aria-label="Interactive map. Use plus and minus to zoom, arrow keys to pan or rotate, and Home to reset."></svg>
+          <canvas class="map-surface" id="classicGlobe" tabindex="0" role="img" aria-label="Rotatable 3D globe with individual specimens. Drag or use arrow keys to rotate; use the record list below for keyboard access to each specimen." hidden></canvas>
+          <div class="map-controls"><button class="icon-button" id="zoomIn" aria-label="Zoom in" title="Zoom in">+</button><button class="icon-button" id="zoomOut" aria-label="Zoom out" title="Zoom out">−</button><button class="icon-button" id="mapReset" aria-label="Reset map" title="Reset map">↺</button><button class="icon-button" id="fit" aria-label="Fit filtered points" title="Fit filtered points">Fit</button></div>
+          <p id="mapProjection" class="map-projection">28–86°N · individual localities</p>
+          <div id="mapEmpty" class="map-empty" hidden><h3>No mapped records in this view</h3><p>Try adjusting the filters, or inspect the matching records below.</p><button class="button" id="emptyReset">Reset filters</button></div>
+          <div id="mapTooltip" class="map-tooltip" role="tooltip" hidden></div>
+        </div>
+        <section class="time-panel" id="discoveryChronology" aria-label="Discovery chronology">
+          <div class="time-heading"><label for="endYear">Discovery chronology</label><div class="time-mode"><label class="sr-only" for="timeMode">Discovery chronology mode</label><select id="timeMode"><option value="through">Found by year</option><option value="between">Found between years</option></select><button id="timeReset" class="text-button">All years</button></div></div>
+          <div class="timeline"><svg id="histogram" viewBox="0 0 800 38" preserveAspectRatio="none" aria-label="Recorded discoveries per decade; select a bar to filter to that decade"></svg></div>
+          <div class="year-controls"><button id="play" class="icon-button" aria-label="Play discovery chronology" title="Play discovery chronology">▶</button><label id="startWrap" hidden><span class="sr-only">Start year</span><input id="startYear" type="number" min="{{YEAR_MIN}}" max="{{YEAR_MAX}}" value="{{YEAR_MIN}}"></label><input id="yearRange" type="range" min="{{YEAR_MIN}}" max="{{YEAR_MAX}}" value="{{YEAR_MAX}}" aria-label="Latest discovery year"><label><span class="sr-only">End year</span><input id="endYear" type="number" min="{{YEAR_MIN}}" max="{{YEAR_MAX}}" value="{{YEAR_MAX}}"></label></div>
+          <div class="time-caption"><span>{{YEAR_MIN}}</span><span id="timeCaption">All recorded find years</span><span>{{YEAR_MAX}}</span></div>
+        </section>
+        <section class="time-panel age-panel" id="specimenChronology" aria-labelledby="agePanelTitle" hidden>
+          <div class="time-heading"><h3 id="agePanelTitle">Specimen ages</h3><div class="time-mode"><label class="sr-only" for="ageMode">Specimen age selection</label><select id="ageMode"><option value="all">All recorded ages</option><option value="between">Select an age interval</option></select><button id="ageReset" class="text-button">All ages</button></div></div>
+          <p class="age-context">Years as recorded in the sources · No translation or recalibration</p>
+          <div class="age-plot"><svg id="ageTimeline" viewBox="0 0 800 180" preserveAspectRatio="none" role="group" aria-label="Recorded specimen ages. Each row is one specimen. Lines retain ranges and uncertainty; arrows indicate lower limits."></svg><p id="agePlotEmpty" hidden>No numeric age positions in this selection.</p></div>
+          <div class="age-axis" id="ageAxis" aria-hidden="true"></div>
+          <div class="age-range-controls"><label for="ageStart">Minimum age<input id="ageStart" type="number" min="0" max="65000" step="1" value="0"></label><label for="ageMinRange" class="sr-only">Minimum specimen age in source years</label><input id="ageMinRange" type="range" min="0" max="65000" step="1" value="0"><label for="ageMaxRange" class="sr-only">Maximum specimen age in source years</label><input id="ageMaxRange" type="range" min="0" max="65000" step="1" value="65000"><label for="ageEnd">Maximum age<input id="ageEnd" type="number" min="0" max="65000" step="1" value="65000"></label></div>
+          <div class="age-selection-caption"><strong id="ageSelection">All recorded ages</strong><span id="ageCoverage"></span></div>
+          <p class="age-help">Each row represents one specimen. Age ranges overlap the selected interval; arrows continue beyond a reported lower limit. Multiple reported ages stay separate. Source timescales are not harmonized.</p>
+        </section>
+        <div class="map-legend" id="legend"></div>
+        <div class="map-foot"><p id="mapCoverage"></p><p>Drag to move · + / − to zoom · Home to reset</p></div>
+        <p id="viewNote" class="view-note"></p>
+        <p class="plate-caption"><span>Plate · Discovery map · {{YEAR_SPAN}}</span><span>Coastline embedded · {{EDITION}}</span></p>
+      </section>
+      <section id="tablePanel" class="table-panel plate" role="tabpanel" aria-labelledby="tab-table" hidden><div class="table-scroll" tabindex="0" aria-label="Scrollable specimen table"><table><caption class="sr-only">Filtered specimen records. Column buttons change sort order.</caption><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div><p class="plate-caption"><span>Table · matching records</span><span>Source wording retained</span></p></section>
+      <section class="record-browser" aria-label="Matching specimens"><div class="record-list-heading"><div><h2 id="listTitle">Matching records</h2><p id="listCaption">Open a record to read its evidence.</p></div><div><label class="sr-only" for="sort">Sort matching records</label><select id="sort"><option value="year-asc">Find year: oldest first</option><option value="year-desc">Find year: newest first</option><option value="name-asc">Specimen: A–Z</option><option value="taxon-asc">Taxon: A–Z</option><option value="age-asc">Specimen age: lower values first</option><option value="age-desc">Specimen age: higher values first</option></select></div></div><div id="recordList" class="record-list"></div></section>
+    </section>
+  </div>
+
+  <section class="summary-band" id="summaryBand" aria-labelledby="summaryTitle">
+    <div class="band-inner">
+      <div class="band-head"><h2 id="summaryTitle">Catalogue summary</h2><p>Counts for the whole catalogue of {{TOTAL}} records. Select a bar to filter the map above.</p></div>
+      <div class="summary-grid" id="summaryCharts"></div>
+    </div>
+  </section>
+
+  <section class="accessions" id="accessions" aria-labelledby="accessionsTitle">
+    <div class="band-inner">
+      <div class="band-head"><h2 id="accessionsTitle">Accessions ledger</h2><p id="ledgerStatus">All {{TOTAL}} records in order of discovery year. Select a specimen to open its record.</p></div>
+      <div class="ledger-scroll" id="ledger" tabindex="0" aria-label="Scrollable accessions ledger"></div>
+      <p class="ledger-note">Dimmed lines do not match the current drawer filters; opening one resets the drawer. Years in brackets are collection years used where no discovery year is recorded.</p>
+    </div>
+  </section>
+
+  <section class="method" id="method" aria-labelledby="methodTitle">
+    <div class="band-inner">
+      <div class="band-head"><h2 id="methodTitle">Catalogue notes</h2><p>Method, conventions and citation for edition {{SOURCE_DATE}} (built {{BUILD_DATE}}).</p></div>
+      <div class="notes">
+        <div class="note"><h3>Scope</h3><p>This catalogue presents all {{TOTAL}} data rows in {{SOURCE_SHEET}} of <b>{{SOURCE_FILE}}</b>, the Lab’s current soft-tissue dataset. It shows documented find sites and discovery years alongside the specimen ages reported in the sources, and labels how each find position was obtained. It is not a comprehensive inventory of preserved megafauna.</p></div>
+        <div class="note"><h3>Record identity</h3><p>The workbook contains {{TOTAL}} rows and {{UNIQUE_IDS}} distinct Specimen_id values; {{MAPPED}} rows carry usable coordinates and {{UNMAPPED}} do not. ID numbers are temporary checks for the Lab’s work in progress, not permanent specimen identifiers or citation keys. The {{TAXA_COUNT}} taxon groups follow the workbook’s Species_type column, including <b>Cave Lion/Felid</b>, which also contains <i>Homotherium latidens</i>. The workbook’s Specimen_type_list sheet also lists Caribou and Elk, for which no soft-tissue records have been entered yet.</p>{{CHANGES}}</div>
+        <div class="note"><h3>Coordinate provenance</h3><p>Each row’s Location Provenance cell records how the find coordinate was obtained. The labels are reproduced as written:</p><ul>{{PROVENANCE_LIST}}</ul><p>Source-stated coordinates are drawn as solid points, inferred and historical-map positions with a dashed ring, and regional placeholders or unlocated finds as hollow points. A placeholder marks a region in which the find was reported, not a find spot, so clusters of hollow points can share one coordinate. No accuracy class is inferred from the number of decimal places, and no coordinate has been moved.</p></div>
+        <div class="note"><h3>Source wording and display fields</h3><p>Original cell values are retained for every source column. Spaces and underscores are normalized for readable names; the embedded source values keep the original spelling. Specimen-age text is reproduced in the wording and notation recorded from the sources. Blank cells, <code>not_available</code>, <code>not_applicable</code> and <code>?</code> remain distinct source values. Material tags are derived from the Parts_found descriptions; phrases that describe missing parts are ignored when tagging, and “Whole / near-whole” follows the workbook’s Complete? field. Text found in header-less workbook columns is shown in the record as a workbook note.</p></div>
+        <div class="note"><h3>Map positions</h3><p>Each specimen remains an individual point. When symbols overlap, the interface separates them on screen and draws fine leader lines or globe stems back to their coordinate anchors. This is a legibility adjustment, not a new locality or a measure of spatial uncertainty. The flat map uses a rectangular 28–86°N frame with separate horizontal and vertical scaling; use it to locate records, not to measure area or distance. Coastline geometry comes from the original HTML; its source attribution was not supplied.</p></div>
+        <div class="note"><h3>Source values to review</h3><p>These notes flag possible issues while retaining the workbook values. They also appear in the affected records.</p><ul>{{REVIEW_LIST}}</ul></div>
+        <div class="note"><h3>Discovery years and specimen ages</h3><p><b>Discovery sites</b> uses recorded find years, spanning {{YEAR_SPAN}} in this workbook, with the collection year as a fallback. <b>Specimen ages</b> uses the text in Age_BP_radiocarbon and does not inherit the discovery-year filter. Ranges and stated ± uncertainty are retained as intervals, arrows show lower limits, and alternative values are evaluated separately. Digit groups separated by a space, comma or period (“29 500”, “34, 450”, “31.700”) are read as thousands. Nothing is translated, standardized or recalibrated: BP conventionally refers to years before 1950, but calibration and notation differ between sources, and the numeric display does not make these timescales equivalent.</p></div>
+        <div class="note"><h3>Dataset and citation</h3><p><b>Borealis · University of Toronto Dataverse</b><br><span data-dataset-doi>DOI: forthcoming</span></p><p>The dataset link and DOI will be added when publication is complete; “See dataset” will open that publication. Published and archival reference keys are reproduced from the workbook; the published dataset will provide the authoritative citation and reuse terms.</p></div>
+        <div class="note"><h3>Using the catalogue</h3><p>Taxon and provenance choices are inclusive; material filters match any selected tag. Counts in the drawer reflect the other active filters. Chronology bars select a decade. Every map point, ledger line and label plate opens its record. Ctrl/⌘ + scroll zooms the map; ordinary scrolling moves the page. All data, coastline geometry and the globe renderer are embedded in this HTML.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="cat-footer"><div><strong>Mammoth History Lab</strong><span>University of Toronto · Social Sciences and Humanities Research Council of Canada</span></div><p>Source: <b>Borealis · University of Toronto Dataverse</b><br><span class="mono"><span data-dataset-doi>DOI: forthcoming</span> · {{TOTAL}} specimen records · workbook {{SOURCE_DATE}}</span></p><button id="footerAbout" class="text-button">Read methodology &amp; citation notes</button></footer>
+</main>
+<dialog id="recordDialog" class="record-dialog" aria-labelledby="recordTitle"><div class="dialog-toolbar"><span id="recordPosition"></span><div><button id="prevRecord" class="icon-button" aria-label="Previous matching record">←</button><button id="nextRecord" class="icon-button" aria-label="Next matching record">→</button><button id="closeRecord" class="icon-button" aria-label="Close specimen record">×</button></div></div><div id="recordContent"></div></dialog>
+<dialog id="aboutDialog" class="about-dialog" aria-labelledby="aboutTitle"><div class="dialog-toolbar"><strong>About this catalogue</strong><button id="closeAbout" class="icon-button" aria-label="Close about and sources">×</button></div><div class="about-content"><p class="eyebrow">Mammoth History Lab · University of Toronto</p><h2 id="aboutTitle">A catalogue of finds, read alongside their records.</h2><p>This page presents all {{TOTAL}} rows in {{SOURCE_SHEET}} of <b>{{SOURCE_FILE}}</b> (workbook dated {{SOURCE_DATE}}; built {{BUILD_DATE}}): find sites, discovery years, coordinate provenance and the specimen ages reported in the sources. Workbook values are never changed; display fields are derived and documented.</p>
+  <h3>Reading the symbols</h3><p>Colour identifies the taxon group. A solid point is a source-stated coordinate, a dashed ring marks an inferred or historical-map position, and a hollow point marks a regional placeholder or an unlocated find. Nearby points are separated on screen only; fine leader lines keep their coordinate anchors.</p>
+  <h3>Citation</h3><p><b>A Map of Permafrost-Preserved Pleistocene Megafaunal Specimens.</b> Rebecca Woods, Alexander Offord, Kadir Selamet. Mammoth History Lab, University of Toronto. Borealis · University of Toronto Dataverse, <span data-dataset-doi>DOI: forthcoming</span>. Funded by the Social Sciences and Humanities Research Council of Canada.</p>
+  <h3>Full notes</h3><p>Method, conventions, the list of source values to review and the change log for this edition are printed in the Catalogue notes at the foot of the page.</p><p><a href="#method" id="aboutToNotes">Go to the catalogue notes</a></p>
+</div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<noscript><p class="noscript">Enable JavaScript to use this interactive catalogue. The data are embedded in the HTML as the payload JSON.</p></noscript>
+<script id="land" type="text/plain">{{LAND}}</script>
+<script id="payload" type="application/json">{{PAYLOAD}}</script>
+<!-- Three.js r128 — MIT License
+Copyright 2010-2021 Three.js Authors
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<script>{{THREE}}</script>
+<script>/* Taxon colours for this catalogue: validated for colour-vision deficiency and contrast on the dark map (dataviz validator, species order). */
+globalThis.__ATLAS_PALETTE__={Mammoth:'#c98500',Rhinoceros:'#199e70','Cave Lion/Felid':'#d95926',Horse:'#3987e5','Wolf/Canid':'#d55181',Bison:'#6a8f00'};</script>
+<script>{{APP}}</script>
+<script>{{EXTRA}}</script>
+</body>
+</html>
