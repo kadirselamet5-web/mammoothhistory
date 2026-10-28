@@ -1,0 +1,10 @@
+{
+  "_about": "Curated review notes shown in the map's record dialogs and in the About panel. Keys are Specimen_id values; values are one note or a list of notes. The build script adds its own automatic checks (duplicate IDs, text coordinates, ambiguous age text, missing coordinates) to these. Edit this file, not the HTML.",
+  "notes": {
+    "84": "Blue Babe (Pearl Creek, near Fairbanks, Alaska) has longitude -47.3166666667 in this workbook; the previous edition and the locality imply about -147.32. As entered, the point plots in Greenland. The value has not been changed; please check the cell.",
+    "92": "The find coordinate (59.94, 30.31) lies at the St. Petersburg collection city while Location_found says Yuribei_River and the provenance label is regional_placeholder. Check whether find and collection coordinates were interchanged. The source value is retained.",
+    "143": "The workbook longitude is positive (+138.825), so Nun Cho Ga (Eureka Creek, Yukon) plots at 138.825°E in Siberia rather than 138.825°W. No hemisphere correction has been applied; check the sign.",
+    "146": "An unlabelled workbook note says the corpse is old enough to defy standard radiocarbon dating; the age text is retained verbatim.",
+    "34": "Age_BP_radiocarbon reads not_applicable while every other undated record uses not_available. Both are treated as 'no numeric age'."
+  }
+}
