@@ -11,9 +11,7 @@ const clean = s => String(s ?? '').replace(/_/g, ' ').replace(/\s+/g, ' ').trim(
 const svgEl = (tag, attrs = {}, text) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); if (text != null) n.textContent = text; return n; };
 const PALETTE = globalThis.__ATLAS_PALETTE__ || {};
 const MATERIALS = {skin:'Skin & hide',hair:'Hair, fur & wool',flesh:'Flesh & muscle',organs:'Internal organs',trunk:'Trunk',keratin:'Hoofs, claws, nails & horn',carcass:'Whole / near-whole',softgeneric:'Soft tissue / mummified',connective:'Tendons & ligaments',unclassified:'No material tag assigned'};
-const MATERIAL_SHORT = {keratin:'Hoofs, claws, horn',softgeneric:'Soft tissue',unclassified:'No material tag'};
 const PROV_TEXT = {source_stated:'Source-stated',historical_map:'Historical map',inferred_historical_map:'Inferred / historical map',inferred:'Inferred',regional_placeholder:'Regional placeholder',unlocated:'Unlocated',unlabelled:'No provenance label'};
-const PROV_SHORT = {inferred_historical_map:'Inferred / hist. map'};
 const PROV_STYLE = {source_stated:'solid',historical_map:'derived',inferred_historical_map:'derived',inferred:'derived',regional_placeholder:'placeholder',unlocated:'placeholder',unlabelled:'placeholder'};
 const GRADE_TEXT = {4:'Complete',3:'Mostly complete',2:'Partial',1:'Fragments only',0:'Not recorded'};
 const MAPPED_TEXT = {mapped:'Coordinates recorded',unmapped:'No coordinates recorded'};
@@ -27,15 +25,24 @@ const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const plural = n => n === 1 ? 'record' : 'records';
 
 /* ---- Hash state: the engine owns the hash; these helpers merge into it and let it re-parse. ---- */
-function go(params, { merge = true, scrollTo = 'workspace' } = {}) {
+function go(params, { merge = true, scrollTo = 'workspace', keep = null } = {}) {
   const p = new URLSearchParams(merge ? location.hash.replace(/^#/, '') : '');
   for (const [k, v] of Object.entries(params)) { if (v == null) p.delete(k); else p.set(k, v); }
   if (!p.get('view')) p.set('view', 'sites');
   if (!p.get('projection')) p.set('projection', 'flat');
   const next = '#' + p.toString();
+  if (keep) keepInPlace(keep);
   if (next === location.hash) { window.dispatchEvent(new HashChangeEvent('hashchange')); } else location.hash = next;
   const target = scrollTo && $(scrollTo);
   if (target) target.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
+}
+// Filtering re-renders the record list above the summary band, which changes the page height; keep
+// the element the reader just used at the same place on screen. The engine's hashchange listener was
+// registered first, so this one runs after its re-render.
+function keepInPlace(el) {
+  const before = el.getBoundingClientRect().top;
+  const settle = () => { const delta = el.getBoundingClientRect().top - before; if (Math.abs(delta) > 1) window.scrollBy({ top: delta, behavior: 'instant' }); };
+  window.addEventListener('hashchange', () => { settle(); requestAnimationFrame(settle); }, { once: true });
 }
 const readHash = () => new URLSearchParams(location.hash.replace(/^#/, ''));
 const listIn = (p, key) => p.has(key) ? p.get(key).split(',').filter(Boolean) : null;
@@ -112,7 +119,7 @@ function decadesChart() {
     const pct = (b.n / top * 100).toFixed(2), label = `${b.d}s`;
     if (!b.n) return `<span class="decade-band" aria-hidden="true"></span>`;
     const text = `<b>${label}</b><br>${b.n} ${plural(b.n)} recorded<br>Select to filter the map`;
-    return `<button class="decade-band" data-decade="${b.d}" data-tip="${esc(text)}" aria-label="${label}: ${b.n} finds. Filter the map to this decade."><span class="decade-bar" style="--h:${pct}">${busiest.includes(b.d) ? `<span class="decade-count">${b.n}</span>` : ''}</span></button>`;
+    return `<button class="decade-band" data-decade="${b.d}" data-tip="${esc(text)}" aria-pressed="false" aria-label="${label}: ${b.n} finds. Filter the map to this decade."><span class="decade-bar" style="--h:${pct}">${busiest.includes(b.d) ? `<span class="decade-count">${b.n}</span>` : ''}</span></button>`;
   }).join('');
   const span = last + 10 - first, axis = [];
   for (let y = Math.ceil(first / 50) * 50; y <= last + 10; y += 50) axis.push(`<span style="left:${((y - first) / span * 100).toFixed(2)}%">${y}</span>`);
@@ -150,9 +157,9 @@ function renderSummary() {
   const matRows = Object.keys(MATERIALS).filter(k => mats.has(k)).map(k => ({ key: k, n: mats.get(k) })).sort((a, b) => b.n - a.n);
   const taxonChart = barList({ id: 'chartTaxa', title: 'Taxon groups', sub: `${total} records · Species_type column`, rows: taxonRows, total, param: 'taxa', labelFor: k => k, swatchFor: k => taxonSwatch(k), colorFor: k => PALETTE[k] || '#b0a89f' });
   const gradeChart = barList({ id: 'chartGrade', title: 'Completeness', sub: 'Complete? column, as recorded', rows: gradeRows, total, param: null, labelFor: k => GRADE_TEXT[k] });
-  const provChart = barList({ id: 'chartProv', title: 'Coordinate provenance', sub: `${total} records · Location Provenance column`, rows: provRows, total, param: 'prov', labelFor: k => PROV_TEXT[k] || clean(k), shortFor: k => PROV_SHORT[k], swatchFor: k => provSymbol(PROV_STYLE[k] || 'placeholder'), after: '<p class="chart-key">Solid point: source-stated coordinate. Dashed ring: inferred or historical-map position. Hollow point: regional placeholder or unlocated find.</p>' });
+  const provChart = barList({ id: 'chartProv', title: 'Coordinate provenance', sub: `${total} records · Location Provenance column`, rows: provRows, total, param: 'prov', labelFor: k => PROV_TEXT[k] || clean(k), swatchFor: k => provSymbol(PROV_STYLE[k] || 'placeholder'), after: '<p class="chart-key">Solid point: source-stated coordinate. Dashed ring: inferred or historical-map position. Hollow point: regional placeholder or unlocated find.</p>' });
   const mappedChart = barList({ id: 'chartMapped', title: 'Map position', sub: 'Latitude and Longitude cells', rows: mappedRows, total, param: 'mapped', labelFor: k => MAPPED_TEXT[k] });
-  const matChart = barList({ id: 'chartMaterial', title: 'Preserved material', sub: 'Tags derived from Parts_found · a record can carry several', rows: matRows, total, param: 'material', labelFor: k => MATERIALS[k], shortFor: k => MATERIAL_SHORT[k], extraClass: 'material' });
+  const matChart = barList({ id: 'chartMaterial', title: 'Preserved material', sub: 'Tags derived from Parts_found · a record can carry several', rows: matRows, total, param: 'material', labelFor: k => MATERIALS[k], extraClass: 'material' });
   host.innerHTML = decadesChart()
     + `<div class="chart-stack">${taxonChart}${gradeChart}</div>`
     + `<div class="chart-stack">${provChart}${mappedChart}</div>`
@@ -160,16 +167,16 @@ function renderSummary() {
   attachTip(host);
   host.addEventListener('click', e => {
     const band = e.target.closest('.decade-band[data-decade]');
-    if (band) { const d = +band.dataset.decade; go({ view: 'sites', from: String(d), to: String(d + 9), ageFrom: null, ageTo: null }); return; }
+    if (band) { const d = +band.dataset.decade; go({ view: 'sites', from: String(d), to: String(d + 9), ageFrom: null, ageTo: null }, { scrollTo: null, keep: band }); return; }
     const row = e.target.closest('.bar-row[data-param]');
     if (!row) return;
     const { param, key } = row.dataset;
     const p = readHash(), current = listIn(p, param) || [];
-    if (param === 'mapped') { go({ mapped: current.includes(key) ? null : key }, { scrollTo: null }); return; }
+    if (param === 'mapped') { go({ mapped: current.includes(key) ? null : key }, { scrollTo: null, keep: row }); return; }
     // taxa, prov and material are the engine's multi-select lists: toggle the key, like the filter panel.
     const next = current.includes(key) ? current.filter(k => k !== key) : [...current, key];
     const all = param === 'taxa' ? Object.keys(payload.species).length : param === 'prov' ? provRows.length : null;
-    go({ [param]: !next.length || (all && next.length >= all && param !== 'material') ? null : next.join(',') }, { scrollTo: null });
+    go({ [param]: !next.length || (all && next.length >= all && param !== 'material') ? null : next.join(',') }, { scrollTo: null, keep: row });
   });
 }
 // Active states on the bars follow the engine's state; the engine rewrites the hash with replaceState,
@@ -181,12 +188,21 @@ function syncBars() {
     const on = row.dataset.param === 'mapped' ? p.get('mapped') === row.dataset.key : (list || []).includes(row.dataset.key);
     row.classList.toggle('active', on); row.setAttribute('aria-pressed', String(on));
   });
+  // The engine clamps the year window to the recorded span, so a decade band is active when the
+  // window lies inside its decade.
+  const from = p.has('from') ? +p.get('from') : null, to = p.has('to') ? +p.get('to') : null;
+  document.querySelectorAll('.decade-band[data-decade]').forEach(band => {
+    const d = +band.dataset.decade, on = from != null && to != null && from >= d && to <= d + 9;
+    band.classList.toggle('active', on); band.setAttribute('aria-pressed', String(on));
+  });
 }
 
 /* ---- Specimen plates: every record whose Complete? field reads Complete; four shown, the rest on request ---- */
 function renderPlates() {
   const host = $('plateGrid'), toggle = $('platesToggle'); if (!host) return;
-  const SHOWN = 4;
+  // Four plates in a four- or two-column grid, three when the grid has three columns, so no plate sits alone.
+  const threeCols = matchMedia('(min-width: 901px) and (max-width: 1250px)');
+  const shown = () => threeCols.matches ? 3 : 4;
   const rows = RECS.filter(r => r.grade === 4).sort((a, b) => (year(a) || 0) - (year(b) || 0) || a.source_row - b.source_row);
   const caption = $('platesCaption'); if (caption) caption.textContent = `${rows.length} records whose Complete? field reads Complete, in order of discovery. Select a plate to open the full record; plates outside the current filters are dimmed.`;
   const cards = rows.map((r, i) => {
@@ -195,10 +211,10 @@ function renderPlates() {
     const pk = provKey(r), provLabel = PROV_TEXT[pk] || clean(r.coordinate_label || 'No label'), y = year(r), yearNote = y && !r.year_found ? ' (collection)' : '';
     const age = r.age && r.age[1] === 'val' ? esc(r.age[0]) : '<span class="missing">not recorded</span>';
     const coord = isMapped(r) ? `${r.lat}, ${r.lon}` : 'not recorded';
-    b.innerHTML = `<div class="plate-head"><span>No. ${esc(r.source_id)}</span><span class="taxon">${taxonSwatch(r.species, 11)}${esc(r.species)}</span></div>
+    b.innerHTML = `<div class="plate-head"><span>No. ${esc(r.source_id)}</span><span class="plate-state" aria-live="polite"></span><span class="taxon">${taxonSwatch(r.species, 11)}${esc(r.species)}</span></div>
       <div><h3>${esc(name(r))}</h3><p class="binomial">${esc(r.binomial || '')}</p></div>
       <dl><div><dt>Locality</dt><dd>${esc(clean(r.location))}</dd></div><div><dt>Found</dt><dd class="mono">${y ? y + yearNote : 'not recorded'}</dd></div><div><dt>Coordinate</dt><dd class="mono">${esc(coord)}</dd></div><div><dt>Position</dt><dd><span class="prov">${provSymbol(PROV_STYLE[pk] || 'placeholder', 12)}${esc(provLabel)}</span></dd></div><div><dt>Age as recorded</dt><dd>${age}</dd></div></dl>`;
-    if (i >= SHOWN) b.hidden = true;
+    if (i >= shown()) b.hidden = true;
     return b;
   });
   host.replaceChildren(...cards);
@@ -208,16 +224,17 @@ function renderPlates() {
     go({ view: 'sites', record: b.dataset.open });
   });
   if (toggle) {
-    if (rows.length <= SHOWN) toggle.hidden = true;
+    if (rows.length <= 3) toggle.hidden = true;
     else {
       const label = open => open ? 'Show fewer' : `Show all ${rows.length} plates`;
+      const apply = () => { const open = toggle.getAttribute('aria-expanded') === 'true'; cards.forEach((c, i) => { c.hidden = !open && i >= shown(); }); toggle.textContent = label(open); };
       toggle.textContent = label(false);
       toggle.addEventListener('click', () => {
         const open = toggle.getAttribute('aria-expanded') !== 'true';
-        cards.forEach((c, i) => { c.hidden = !open && i >= SHOWN; });
-        toggle.setAttribute('aria-expanded', String(open)); toggle.textContent = label(open);
+        toggle.setAttribute('aria-expanded', String(open)); apply();
         if (!open) $('plates').scrollIntoView({ behavior: 'auto', block: 'start' });
       });
+      threeCols.addEventListener('change', apply);
     }
   }
 }
@@ -256,9 +273,10 @@ function watchFilters() {
       else { tr.title = 'Outside the current filters'; link.setAttribute('aria-disabled', 'true'); link.setAttribute('tabindex', '-1'); }
     }
     if (plates) for (const b of plates.querySelectorAll('.plate[data-open]')) {
-      const on = visible.has(b.dataset.open);
+      const on = visible.has(b.dataset.open), state = b.querySelector('.plate-state');
       b.classList.toggle('dim', !on);
-      if (on) { b.removeAttribute('aria-disabled'); b.removeAttribute('title'); } else { b.setAttribute('aria-disabled', 'true'); b.title = 'Outside the current filters'; }
+      if (on) { b.removeAttribute('aria-disabled'); b.removeAttribute('tabindex'); if (state) state.textContent = ''; }
+      else { b.setAttribute('aria-disabled', 'true'); b.setAttribute('tabindex', '-1'); if (state) state.textContent = 'Outside the current filters'; }
     }
     if (status) status.textContent = shown === TOTAL ? `All ${TOTAL} records in order of discovery year. Select a specimen to open its record.` : `${shown} of ${TOTAL} records match the current filters; the rest are dimmed and cannot be opened. Select a specimen to open its record.`;
     syncBars();
